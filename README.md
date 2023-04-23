@@ -70,7 +70,7 @@ to quickly create a Cobra application.`
 }
 ```
 
-where `NewChildCmd()` is defined an another file
+where `NewChildCmd()` is defined in another file
 
 ```go
 func NewChildCmd() *cobra.Command {
