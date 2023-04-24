@@ -8,21 +8,17 @@ import (
 	"github.com/spf13/pflag"
 )
 
+// CobraCmdBuilder is a builder for cobra Command fields and chaining other
+// helpful methods. Flags can be added to a command using builder methods as
+// well.
 type CobraCmdBuilder struct {
 	cmd *cobra.Command
 }
 
 // NewCobraCmd creates a new CobraCmdBuilder and sets the use for the
 // underlying cobra Command
-func NewCobraCmd(use string) *CobraCmdBuilder {
-	return &CobraCmdBuilder{
-		cmd: &cobra.Command{
-			Use: use,
-		},
-	}
-}
-
-// WithUse is the one-line usage message.
+//
+// Use is the one-line usage message.
 // Recommended syntax is as follows:
 //
 //	[ ] identifies an optional argument. Arguments that are not enclosed in brackets are required.
@@ -33,19 +29,23 @@ func NewCobraCmd(use string) *CobraCmdBuilder {
 //	    optional, they are enclosed in brackets ([ ]).
 //
 // Example: add [-F file | -D dir]... [-f format] profile
-func (b *CobraCmdBuilder) WithUse(use string) *CobraCmdBuilder {
-	b.cmd.Use = use
-	return b
+func NewCobraCmd(use string) *CobraCmdBuilder {
+	return &CobraCmdBuilder{
+		cmd: &cobra.Command{
+			Use: use,
+		},
+	}
 }
 
-// WithAliases is an array of aliases that can be used instead of the first word in Use.
+// WithAliases is an array of aliases that can be used instead of the first word
+// in Use.
 func (b *CobraCmdBuilder) WithAliases(aliases []string) *CobraCmdBuilder {
 	b.cmd.Aliases = aliases
 	return b
 }
 
-// SuggestFor is an array of command names for which this command will be suggested
-// similar to aliases but only suggests.
+// SuggestFor is an array of command names for which this command will be
+// suggested - similar to aliases but only suggests.
 func (b *CobraCmdBuilder) SuggestFor(cmds []string) *CobraCmdBuilder {
 	b.cmd.SuggestFor = cmds
 	return b
@@ -93,6 +93,10 @@ func (b *CobraCmdBuilder) WithValidArgsFunction(validArgsFunc func(cmd *cobra.Co
 }
 
 // WithArgs sets the expected arguments for the command.
+//
+// For example:
+//
+//	WithArgs(cobra.MatchAll(cobra.MinimumNArgs(1), cobra.OnlyValidArgs))
 func (b *CobraCmdBuilder) WithArgs(args cobra.PositionalArgs) *CobraCmdBuilder {
 	b.cmd.Args = args
 	return b
@@ -113,8 +117,8 @@ func (b *CobraCmdBuilder) WithBashCompletionFunction(bashCompletionFunction stri
 	return b
 }
 
-// Deprecated defines, if this command is deprecated and should print this
-// string when used
+// Deprecated defines if this command is deprecated and should print this string
+// when used
 func (b *CobraCmdBuilder) Deprecated(deprecated string) *CobraCmdBuilder {
 	b.cmd.Deprecated = deprecated
 	return b
@@ -152,24 +156,60 @@ func (b *CobraCmdBuilder) WithPersistentPreRunFunc(f func(cmd *cobra.Command, ar
 	return b
 }
 
+// The *Run functions are executed in the following order:
+//   - PersistentPreRun()
+//   - PreRun()
+//   - Run()
+//   - PostRun()
+//   - PersistentPostRun()
+//
+// All functions get the same args, the arguments after the command name.
+//
 // WithPersistentPreRunEFunc: PersistentPreRun but returns an error.
 func (b *CobraCmdBuilder) WithPersistentPreRunEFunc(f func(cmd *cobra.Command, args []string) error) *CobraCmdBuilder {
 	b.cmd.PersistentPreRunE = f
 	return b
 }
 
+// The *Run functions are executed in the following order:
+//   - PersistentPreRun()
+//   - PreRun()
+//   - Run()
+//   - PostRun()
+//   - PersistentPostRun()
+//
+// All functions get the same args, the arguments after the command name.
+//
 // WithPreRunFunc: children of this command will not inherit.
 func (b *CobraCmdBuilder) WithPreRunFunc(f func(cmd *cobra.Command, args []string)) *CobraCmdBuilder {
 	b.cmd.PreRun = f
 	return b
 }
 
+// The *Run functions are executed in the following order:
+//   - PersistentPreRun()
+//   - PreRun()
+//   - Run()
+//   - PostRun()
+//   - PersistentPostRun()
+//
+// All functions get the same args, the arguments after the command name.
+//
 // WithPreRunEFunc: PreRun but returns an error.
 func (b *CobraCmdBuilder) WithPreRunEFunc(f func(cmd *cobra.Command, args []string) error) *CobraCmdBuilder {
 	b.cmd.PreRunE = f
 	return b
 }
 
+// The *Run functions are executed in the following order:
+//   - PersistentPreRun()
+//   - PreRun()
+//   - Run()
+//   - PostRun()
+//   - PersistentPostRun()
+//
+// All functions get the same args, the arguments after the command name.
+//
 // WithRunFunc: Typically the actual work function. Most commands will only
 // implement this.
 func (b *CobraCmdBuilder) WithRunFunc(f func(cmd *cobra.Command, args []string)) *CobraCmdBuilder {
@@ -177,24 +217,60 @@ func (b *CobraCmdBuilder) WithRunFunc(f func(cmd *cobra.Command, args []string))
 	return b
 }
 
+// The *Run functions are executed in the following order:
+//   - PersistentPreRun()
+//   - PreRun()
+//   - Run()
+//   - PostRun()
+//   - PersistentPostRun()
+//
+// All functions get the same args, the arguments after the command name.
+//
 // WithRunEFunc: Run but returns an error.
 func (b *CobraCmdBuilder) WithRunEFunc(f func(cmd *cobra.Command, args []string) error) *CobraCmdBuilder {
 	b.cmd.RunE = f
 	return b
 }
 
+// The *Run functions are executed in the following order:
+//   - PersistentPreRun()
+//   - PreRun()
+//   - Run()
+//   - PostRun()
+//   - PersistentPostRun()
+//
+// All functions get the same args, the arguments after the command name.
+//
 // WithPostRunFunc: run after the Run command.
 func (b *CobraCmdBuilder) WithPostRunFunc(f func(cmd *cobra.Command, args []string)) *CobraCmdBuilder {
 	b.cmd.PostRun = f
 	return b
 }
 
+// The *Run functions are executed in the following order:
+//   - PersistentPreRun()
+//   - PreRun()
+//   - Run()
+//   - PostRun()
+//   - PersistentPostRun()
+//
+// All functions get the same args, the arguments after the command name.
+//
 // WithPostRunEFunc: PostRun but returns an error.
 func (b *CobraCmdBuilder) WithPostRunEFunc(f func(cmd *cobra.Command, args []string) error) *CobraCmdBuilder {
 	b.cmd.PostRunE = f
 	return b
 }
 
+// The *Run functions are executed in the following order:
+//   - PersistentPreRun()
+//   - PreRun()
+//   - Run()
+//   - PostRun()
+//   - PersistentPostRun()
+//
+// All functions get the same args, the arguments after the command name.
+//
 // WithPersistentPostRunFunc: children of this command will inherit and execute
 // after PostRun.
 func (b *CobraCmdBuilder) WithPersistentPostRunFunc(f func(cmd *cobra.Command, args []string)) *CobraCmdBuilder {
@@ -202,20 +278,29 @@ func (b *CobraCmdBuilder) WithPersistentPostRunFunc(f func(cmd *cobra.Command, a
 	return b
 }
 
+// The *Run functions are executed in the following order:
+//   - PersistentPreRun()
+//   - PreRun()
+//   - Run()
+//   - PostRun()
+//   - PersistentPostRun()
+//
+// All functions get the same args, the arguments after the command name.
+//
 // WithPersistentPostRunEFunc: PersistentPostRun but returns an error.
 func (b *CobraCmdBuilder) WithPersistentPostRunEFunc(f func(cmd *cobra.Command, args []string) error) *CobraCmdBuilder {
 	b.cmd.PersistentPostRunE = f
 	return b
 }
 
-// WithFParseErrWhitelist flag parse errors to be ignored
+// WithFParseErrWhitelist flag parse errors to be ignored.
 func (b *CobraCmdBuilder) WithFParseErrWhitelist(flagParseErrors cobra.FParseErrWhitelist) *CobraCmdBuilder {
 	b.cmd.FParseErrWhitelist = flagParseErrors
 	return b
 }
 
 // WithCompletionOptions is a set of options to control the handling of shell
-// completion
+// completion.
 func (b *CobraCmdBuilder) WithCompletionOptions(options cobra.CompletionOptions) *CobraCmdBuilder {
 	b.cmd.CompletionOptions = options
 	return b
@@ -227,7 +312,7 @@ func (b *CobraCmdBuilder) TraverseChildren(traverse bool) *CobraCmdBuilder {
 	return b
 }
 
-// Hidden defines, if this command is hidden and should NOT show up in the list
+// Hidden defines if this command is hidden and should NOT show up in the list
 // of available commands.
 func (b *CobraCmdBuilder) Hidden(hidden bool) *CobraCmdBuilder {
 	b.cmd.Hidden = hidden
@@ -281,33 +366,32 @@ func (b *CobraCmdBuilder) WithSuggestionsMinimumDistance(distance int) *CobraCmd
 	return b
 }
 
-// WithSubCommands sets the sub commands for for the underlying cobra Command
+// WithSubCommands adds one or more commands to this parent command.
 func (b *CobraCmdBuilder) WithSubCommands(cmds ...*cobra.Command) *CobraCmdBuilder {
-	for _, cmd := range cmds {
-		b.cmd.AddCommand(cmd)
-	}
+	b.cmd.AddCommand(cmds...)
 	return b
 }
 
-// WithUsageTemplate sets the usage template for the underlying cobra Command
+// WithUsageTemplate sets usage template. Can be defined by Application.
 func (b *CobraCmdBuilder) WithUsageTemplate(template string) *CobraCmdBuilder {
 	b.cmd.SetUsageTemplate(template)
 	return b
 }
 
-// WithHelpTemplate sets the help template for the underlying cobra Command
+// WithHelpTemplate sets help template to be used. Application can use it to set
+// custom template.
 func (b *CobraCmdBuilder) WithHelpTemplate(template string) *CobraCmdBuilder {
 	b.cmd.SetHelpTemplate(template)
 	return b
 }
 
-// WithUsageFunc sets the usage function for the underlying cobra Command
+// WithUsageFunc sets usage function. Usage can be defined by application.
 func (b *CobraCmdBuilder) WithUsageFunc(function func(*cobra.Command) error) *CobraCmdBuilder {
 	b.cmd.SetUsageFunc(function)
 	return b
 }
 
-// WithHelpFunc sets the help function for the underlying cobra Command
+// WithHelpFunc sets help function. Can be defined by Application.
 func (b *CobraCmdBuilder) WithHelpFunc(function func(*cobra.Command, []string)) *CobraCmdBuilder {
 	b.cmd.SetHelpFunc(function)
 	return b
@@ -373,9 +457,9 @@ func (b *CobraCmdBuilder) WithBoolSliceVarPFlag(variable *[]bool, name string, s
 	return b
 }
 
-// WithBytesBase64Flag defines an []byte flag with specified name, default value,
-// and usage string. The return value is the address of an []byte variable that
-// stores the value of the flag.
+// WithBytesBase64Flag defines an []byte flag with specified name, default
+// value, and usage string. The return value is the address of an []byte
+// variable that stores the value of the flag.
 func (b *CobraCmdBuilder) WithBytesBase64Flag(name string, value []byte, usage string) *CobraCmdBuilder {
 	b.cmd.Flags().BytesBase64(name, value, usage)
 	return b
@@ -388,9 +472,9 @@ func (b *CobraCmdBuilder) WithBytesBase64PFlag(name string, shorthand string, va
 	return b
 }
 
-// WithBytesBase64VarFlag defines an []byte flag with specified name, default value,
-// and usage string. The argument p points to an []byte variable in which to
-// store the value of the flag.
+// WithBytesBase64VarFlag defines an []byte flag with specified name, default
+// value, and usage string. The argument p points to an []byte variable in which
+// to store the value of the flag.
 func (b *CobraCmdBuilder) WithBytesBase64VarFlag(variable *[]byte, name string, value []byte, usage string) *CobraCmdBuilder {
 	b.cmd.Flags().BytesBase64Var(variable, name, value, usage)
 	return b
@@ -403,16 +487,16 @@ func (b *CobraCmdBuilder) WithBytesBase64VarPFlag(variable *[]byte, name string,
 	return b
 }
 
-// WithBytesHexFlag defines an []byte flag with specified name, default value, and
-// usage string. The return value is the address of an []byte variable that
+// WithBytesHexFlag defines an []byte flag with specified name, default value,
+// and usage string. The return value is the address of an []byte variable that
 // stores the value of the flag.
 func (b *CobraCmdBuilder) WithBytesHexFlag(name string, value []byte, usage string) *CobraCmdBuilder {
 	b.cmd.Flags().BytesHex(name, value, usage)
 	return b
 }
 
-// WithBytesHexPFlag is like BytesHex, but accepts a shorthand letter that can be
-// used after a single dash.
+// WithBytesHexPFlag is like BytesHex, but accepts a shorthand letter that can
+// be used after a single dash.
 func (b *CobraCmdBuilder) WithBytesHexPFlag(name string, shorthand string, value []byte, usage string) *CobraCmdBuilder {
 	b.cmd.Flags().BytesHexP(name, shorthand, value, usage)
 	return b
@@ -433,9 +517,9 @@ func (b *CobraCmdBuilder) WithBytesHexVarPFlag(variable *[]byte, name string, sh
 	return b
 }
 
-// WithCountFlag defines a count flag with specified name, default value, and usage
-// string. The return value is the address of an int variable that stores the
-// value of the flag. A count flag will add 1 to its value every time it is
+// WithCountFlag defines a count flag with specified name, default value, and
+// usage string. The return value is the address of an int variable that stores
+// the value of the flag. A count flag will add 1 to its value every time it is
 // found on the command line.
 func (b *CobraCmdBuilder) WithCountFlag(name string, usage string) *CobraCmdBuilder {
 	b.cmd.Flags().Count(name, usage)
@@ -1406,790 +1490,793 @@ func (b *CobraCmdBuilder) MarkFlagShorthandDeprecated(name string, usage string)
 	return b
 }
 
-// WithBoolPersistentFlag defines a bool flag with specified name, default value, and
-// usage string. The return value is the address of a bool variable that stores
-// the value of the flag.
+// WithBoolPersistentFlag defines a bool flag with specified name, default
+// value, and usage string. The return value is the address of a bool variable
+// that stores the value of the flag.
 func (b *CobraCmdBuilder) WithBoolPersistentFlag(name string, value bool, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Bool(name, value, usage)
 	return b
 }
 
-// WithBoolPPersistentFlag BoolP is like Bool, but accepts a shorthand letter that can be
-// used after a single dash.
+// WithBoolPPersistentFlag BoolP is like Bool, but accepts a shorthand letter
+// that can be used after a single dash.
 func (b *CobraCmdBuilder) WithBoolPPersistentFlag(name string, shorthand string, value bool, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().BoolP(name, shorthand, value, usage)
 	return b
 }
 
-// WithBoolVarPersistentFlag defines a bool flag with specified name, default value, and
-// usage string. The argument p points to a bool variable in which to store the
-// value of the flag.
+// WithBoolVarPersistentFlag defines a bool flag with specified name, default
+// value, and usage string. The argument p points to a bool variable in which to
+// store the value of the flag.
 func (b *CobraCmdBuilder) WithBoolVarPersistentFlag(variable *bool, name string, value bool, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().BoolVar(variable, name, value, usage)
 	return b
 }
 
-// WithBoolVarPPersistentFlag is like BoolVar, but accepts a shorthand letter that can be
-// used after a single dash.
+// WithBoolVarPPersistentFlag is like BoolVar, but accepts a shorthand letter
+// that can be used after a single dash.
 func (b *CobraCmdBuilder) WithBoolVarPPersistentFlag(variable *bool, name string, shorthand string, value bool, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().BoolVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithBoolSlicePersistentFlag defines a []bool flag with specified name, default value,
-// and usage string. The return value is the address of a []bool variable that
-// stores the value of the flag.
+// WithBoolSlicePersistentFlag defines a []bool flag with specified name,
+// default value, and usage string. The return value is the address of a []bool
+// variable that stores the value of the flag.
 func (b *CobraCmdBuilder) WithBoolSlicePersistentFlag(name string, value []bool, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().BoolSlice(name, value, usage)
 	return b
 }
 
-// WithBoolSlicePPersistentFlag is like BoolSlice, but accepts a shorthand letter that
-// can be used after a single dash.
+// WithBoolSlicePPersistentFlag is like BoolSlice, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithBoolSlicePPersistentFlag(name string, shorthand string, value []bool, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().BoolSliceP(name, shorthand, value, usage)
 	return b
 }
 
-// WithBoolSliceVarPersistentFlag defines a boolSlice flag with specified name, default
-// value, and usage string. The argument p points to a []bool variable in which
-// to store the value of the flag.
+// WithBoolSliceVarPersistentFlag defines a boolSlice flag with specified name,
+// default value, and usage string. The argument p points to a []bool variable
+// in which to store the value of the flag.
 func (b *CobraCmdBuilder) WithBoolSliceVarPersistentFlag(variable *[]bool, name string, value []bool, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().BoolSliceVar(variable, name, value, usage)
 	return b
 }
 
-// WithBoolSliceVarPPersistentFlag is like BoolSliceVar, but accepts a shorthand letter
-// that can be used after a single dash.
+// WithBoolSliceVarPPersistentFlag is like BoolSliceVar, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithBoolSliceVarPPersistentFlag(variable *[]bool, name string, shorthand string, value []bool, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().BoolSliceVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithBytesBase64PersistentFlag defines an []byte flag with specified name, default value,
-// and usage string. The return value is the address of an []byte variable that
-// stores the value of the flag.
+// WithBytesBase64PersistentFlag defines an []byte flag with specified name,
+// default value, and usage string. The return value is the address of an []byte
+// variable that stores the value of the flag.
 func (b *CobraCmdBuilder) WithBytesBase64PersistentFlag(name string, value []byte, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().BytesBase64(name, value, usage)
 	return b
 }
 
-// WithBytesBase64PPersistentFlag is like BytesBase64, but accepts a shorthand letter that
-// can be used after a single dash.
+// WithBytesBase64PPersistentFlag is like BytesBase64, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithBytesBase64PPersistentFlag(name string, shorthand string, value []byte, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().BytesBase64P(name, shorthand, value, usage)
 	return b
 }
 
-// WithBytesBase64VarPersistentFlag defines an []byte flag with specified name, default value,
-// and usage string. The argument p points to an []byte variable in which to
-// store the value of the flag.
+// WithBytesBase64VarPersistentFlag defines an []byte flag with specified name,
+// default value, and usage string. The argument p points to an []byte variable
+// in which to store the value of the flag.
 func (b *CobraCmdBuilder) WithBytesBase64VarPersistentFlag(variable *[]byte, name string, value []byte, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().BytesBase64Var(variable, name, value, usage)
 	return b
 }
 
-// WithBytesBase64VarPPersistentFlag BytesBase64VarP is like BytesBase64Var, but accepts a
-// shorthand letter that can be used after a single dash.
+// WithBytesBase64VarPPersistentFlag BytesBase64VarP is like BytesBase64Var, but
+// accepts a shorthand letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithBytesBase64VarPPersistentFlag(variable *[]byte, name string, shorthand string, value []byte, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().BytesBase64VarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithBytesHexPersistentFlag defines an []byte flag with specified name, default value, and
-// usage string. The return value is the address of an []byte variable that
-// stores the value of the flag.
+// WithBytesHexPersistentFlag defines an []byte flag with specified name,
+// default value, and usage string. The return value is the address of an []byte
+// variable that stores the value of the flag.
 func (b *CobraCmdBuilder) WithBytesHexPersistentFlag(name string, value []byte, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().BytesHex(name, value, usage)
 	return b
 }
 
-// WithBytesHexPPersistentFlag is like BytesHex, but accepts a shorthand letter that can be
-// used after a single dash.
+// WithBytesHexPPersistentFlag is like BytesHex, but accepts a shorthand letter
+// that can be used after a single dash.
 func (b *CobraCmdBuilder) WithBytesHexPPersistentFlag(name string, shorthand string, value []byte, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().BytesHexP(name, shorthand, value, usage)
 	return b
 }
 
-// WithBytesHexVarPersistentFlag BytesHexVar defines an []byte flag with specified name,
-// default value, and usage string. The argument p points to an []byte variable
-// in which to store the value of the flag.
+// WithBytesHexVarPersistentFlag BytesHexVar defines an []byte flag with
+// specified name, default value, and usage string. The argument p points to an
+// []byte variable in which to store the value of the flag.
 func (b *CobraCmdBuilder) WithBytesHexVarPersistentFlag(variable *[]byte, name string, value []byte, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().BytesHexVar(variable, name, value, usage)
 	return b
 }
 
-// WithBytesHexVarPPersistentFlag is like BytesHexVar, but accepts a shorthand letter that
-// can be used after a single dash.
+// WithBytesHexVarPPersistentFlag is like BytesHexVar, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithBytesHexVarPPersistentFlag(variable *[]byte, name string, shorthand string, value []byte, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().BytesHexVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithCountPersistentFlag defines a count flag with specified name, default value, and usage
-// string. The return value is the address of an int variable that stores the
-// value of the flag. A count flag will add 1 to its value every time it is
-// found on the command line.
+// WithCountPersistentFlag defines a count flag with specified name, default
+// value, and usage string. The return value is the address of an int variable
+// that stores the value of the flag. A count flag will add 1 to its value every
+// time it is found on the command line.
 func (b *CobraCmdBuilder) WithCountPersistentFlag(name string, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Count(name, usage)
 	return b
 }
 
-// WithCountPPersistentFlag is like Count only takes a shorthand for the flag name.
+// WithCountPPersistentFlag is like Count only takes a shorthand for the flag
+// name.
 func (b *CobraCmdBuilder) WithCountPPersistentFlag(name string, shorthand string, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().CountP(name, shorthand, usage)
 	return b
 }
 
-// WithCountVarPersistentFlag defines a count flag with specified name, default value, and
-// usage string. The argument p points to an int variable in which to store the
-// value of the flag. A count flag will add 1 to its value every time it is
-// found on the command line
+// WithCountVarPersistentFlag defines a count flag with specified name, default
+// value, and usage string. The argument p points to an int variable in which to
+// store the value of the flag. A count flag will add 1 to its value every time
+// it is found on the command line
 func (b *CobraCmdBuilder) WithCountVarPersistentFlag(variable *int, name string, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().CountVar(variable, name, usage)
 	return b
 }
 
-// WithCountVarPPersistentFlag is like CountVar only take a shorthand for the flag name.
+// WithCountVarPPersistentFlag is like CountVar only take a shorthand for the
+// flag name.
 func (b *CobraCmdBuilder) WithCountVarPPersistentFlag(variable *int, name string, shorthand string, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().CountVarP(variable, name, shorthand, usage)
 	return b
 }
 
-// WithDurationPersistentFlag defines a time.Duration flag with specified name, default
-// value, and usage string. The return value is the address of a time.Duration
-// variable that stores the value of the flag.
+// WithDurationPersistentFlag defines a time.Duration flag with specified name,
+// default value, and usage string. The return value is the address of a time
+// .Duration variable that stores the value of the flag.
 func (b *CobraCmdBuilder) WithDurationPersistentFlag(name string, value time.Duration, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Duration(name, value, usage)
 	return b
 }
 
-// WithDurationPPersistentFlag is like Duration, but accepts a shorthand letter that can
-// be used after a single dash.
+// WithDurationPPersistentFlag is like Duration, but accepts a shorthand letter
+// that can be used after a single dash.
 func (b *CobraCmdBuilder) WithDurationPPersistentFlag(name string, shorthand string, value time.Duration, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().DurationP(name, shorthand, value, usage)
 	return b
 }
 
-// WithDurationVarPersistentFlag defines a time.Duration flag with specified name, default
-// value, and usage string. The argument p points to a time.Duration variable in
-// which to store the value of the flag.
+// WithDurationVarPersistentFlag defines a time.Duration flag with specified
+// name, default value, and usage string. The argument p points to a time
+// .Duration variable in which to store the value of the flag.
 func (b *CobraCmdBuilder) WithDurationVarPersistentFlag(variable *time.Duration, name string, value time.Duration, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().DurationVar(variable, name, value, usage)
 	return b
 }
 
-// WithDurationVarPPersistentFlag is like DurationVar, but accepts a shorthand letter that
-// can be used after a single dash.
+// WithDurationVarPPersistentFlag is like DurationVar, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithDurationVarPPersistentFlag(variable *time.Duration, name string, shorthand string, value time.Duration, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().DurationVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithDurationSlicePersistentFlag defines a []time.Duration flag with specified name,
-// default value, and usage string. The return value is the address of a
+// WithDurationSlicePersistentFlag defines a []time.Duration flag with specified
+// name, default value, and usage string. The return value is the address of a
 // []time.Duration variable that stores the value of the flag.
 func (b *CobraCmdBuilder) WithDurationSlicePersistentFlag(name string, value []time.Duration, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().DurationSlice(name, value, usage)
 	return b
 }
 
-// WithDurationSlicePPersistentFlag is like DurationSlice, but accepts a shorthand letter
-// that can be used after a single dash.
+// WithDurationSlicePPersistentFlag is like DurationSlice, but accepts a
+// shorthand letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithDurationSlicePPersistentFlag(name string, shorthand string, value []time.Duration, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().DurationSliceP(name, shorthand, value, usage)
 	return b
 }
 
-// WithDurationSliceVarPersistentFlag defines a durationSlice flag with specified name,
-// default value, and usage string. The argument p points to a []time.Duration
-// variable in which to store the value of the flag.
+// WithDurationSliceVarPersistentFlag defines a durationSlice flag with
+// specified name, default value, and usage string. The argument p points to a
+// []time.Duration variable in which to store the value of the flag.
 func (b *CobraCmdBuilder) WithDurationSliceVarPersistentFlag(variable *[]time.Duration, name string, value []time.Duration, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().DurationSliceVar(variable, name, value, usage)
 	return b
 }
 
-// WithDurationSliceVarPPersistentFlag is like DurationSliceVar, but accepts a shorthand
-// letter that can be used after a single dash.
+// WithDurationSliceVarPPersistentFlag is like DurationSliceVar, but accepts a
+// shorthand letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithDurationSliceVarPPersistentFlag(variable *[]time.Duration, name string, shorthand string, value []time.Duration, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().DurationSliceVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithFloat32PersistentFlag defines a float32 flag with specified name, default value,
-// and usage string. The return value is the address of a float32 variable that
-// stores the value of the flag.
+// WithFloat32PersistentFlag defines a float32 flag with specified name, default
+// value, and usage string. The return value is the address of a float32
+// variable that stores the value of the flag.
 func (b *CobraCmdBuilder) WithFloat32PersistentFlag(name string, value float32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Float32(name, value, usage)
 	return b
 }
 
-// WithFloat32PPersistentFlag is like Float32, but accepts a shorthand letter that can be
-// used after a single dash.
+// WithFloat32PPersistentFlag is like Float32, but accepts a shorthand letter
+// that can be used after a single dash.
 func (b *CobraCmdBuilder) WithFloat32PPersistentFlag(name string, shorthand string, value float32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Float32P(name, shorthand, value, usage)
 	return b
 }
 
-// WithFloat32VarPersistentFlag defines a float32 flag with specified name, default value,
-// and usage string. The argument p points to a float32 variable in which to
-// store the value of the flag.
+// WithFloat32VarPersistentFlag defines a float32 flag with specified name,
+// default value, and usage string. The argument p points to a float32 variable
+// in which to store the value of the flag.
 func (b *CobraCmdBuilder) WithFloat32VarPersistentFlag(variable *float32, name string, value float32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Float32Var(variable, name, value, usage)
 	return b
 }
 
-// WithFloat32VarPPersistentFlag is like Float32Var, but accepts a shorthand letter that
-// can be used after a single dash.
+// WithFloat32VarPPersistentFlag is like Float32Var, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithFloat32VarPPersistentFlag(variable *float32, name string, shorthand string, value float32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Float32VarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithFloat32SlicePersistentFlag defines a []float32 flag with specified name, default
-// value, and usage string. The return value is the address of a []float32
-// variable that stores the value of the flag.
+// WithFloat32SlicePersistentFlag defines a []float32 flag with specified name,
+// default value, and usage string. The return value is the address of a [
+// ]float32 variable that stores the value of the flag.
 func (b *CobraCmdBuilder) WithFloat32SlicePersistentFlag(name string, value []float32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Float32Slice(name, value, usage)
 	return b
 }
 
-// WithFloat32SlicePPersistentFlag is like Float32Slice, but accepts a shorthand letter
-// that can be used after a single dash.
+// WithFloat32SlicePPersistentFlag is like Float32Slice, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithFloat32SlicePPersistentFlag(name string, shorthand string, value []float32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Float32SliceP(name, shorthand, value, usage)
 	return b
 }
 
-// WithFloat32SliceVarPersistentFlag defines a float32Slice flag with specified name,
-// default value, and usage string. The argument p points to a []float32
+// WithFloat32SliceVarPersistentFlag defines a float32Slice flag with specified
+// name, default value, and usage string. The argument p points to a []float32
 // variable in which to store the value of the flag.
 func (b *CobraCmdBuilder) WithFloat32SliceVarPersistentFlag(variable *[]float32, name string, value []float32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Float32SliceVar(variable, name, value, usage)
 	return b
 }
 
-// WithFloat32SliceVarPPersistentFlag is like Float32SliceVar, but accepts a shorthand
-// letter that can be used after a single dash.
+// WithFloat32SliceVarPPersistentFlag is like Float32SliceVar, but accepts a
+// shorthand letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithFloat32SliceVarPPersistentFlag(variable *[]float32, name string, shorthand string, value []float32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Float32SliceVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithFloat64PersistentFlag defines a float64 flag with specified name, default value,
-// and usage string. The return value is the address of a float64 variable that
-// stores the value of the flag.
+// WithFloat64PersistentFlag defines a float64 flag with specified name, default
+// value, and usage string. The return value is the address of a float64
+// variable that stores the value of the flag.
 func (b *CobraCmdBuilder) WithFloat64PersistentFlag(name string, value float64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Float64(name, value, usage)
 	return b
 }
 
-// WithFloat64PPersistentFlag is like Float64, but accepts a shorthand letter that can be
-// used after a single dash.
+// WithFloat64PPersistentFlag is like Float64, but accepts a shorthand letter
+// that can be used after a single dash.
 func (b *CobraCmdBuilder) WithFloat64PPersistentFlag(name string, shorthand string, value float64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Float64P(name, shorthand, value, usage)
 	return b
 }
 
-// WithFloat64VarPersistentFlag defines a float64 flag with specified name, default value,
-// and usage string. The argument p points to a float64 variable in which to
-// store the value of the flag.
+// WithFloat64VarPersistentFlag defines a float64 flag with specified name,
+// default value, and usage string. The argument p points to a float64 variable
+// in which to store the value of the flag.
 func (b *CobraCmdBuilder) WithFloat64VarPersistentFlag(variable *float64, name string, value float64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Float64Var(variable, name, value, usage)
 	return b
 }
 
-// WithFloat64VarPPersistentFlag is like Float64Var, but accepts a shorthand letter that
-// can be used after a single dash.
+// WithFloat64VarPPersistentFlag is like Float64Var, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithFloat64VarPPersistentFlag(variable *float64, name string, shorthand string, value float64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Float64VarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithFloat64SlicePersistentFlag defines a []float64 flag with specified name, default
-// value, and usage string. The return value is the address of a []float64
-// variable that stores the value of the flag.
+// WithFloat64SlicePersistentFlag defines a []float64 flag with specified name,
+// default value, and usage string. The return value is the address of a
+// []float64 variable that stores the value of the flag.
 func (b *CobraCmdBuilder) WithFloat64SlicePersistentFlag(name string, value []float64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Float64Slice(name, value, usage)
 	return b
 }
 
-// WithFloat64SlicePPersistentFlag is like Float64Slice, but accepts a shorthand letter
-// that can be used after a single dash.
+// WithFloat64SlicePPersistentFlag is like Float64Slice, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithFloat64SlicePPersistentFlag(name string, shorthand string, value []float64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Float64SliceP(name, shorthand, value, usage)
 	return b
 }
 
-// WithFloat64SliceVarPersistentFlag defines a float64Slice flag with specified name,
-// default value, and usage string. The argument p points to a []float64
+// WithFloat64SliceVarPersistentFlag defines a float64Slice flag with specified
+// name, default value, and usage string. The argument p points to a []float64
 // variable in which to store the value of the flag.
 func (b *CobraCmdBuilder) WithFloat64SliceVarPersistentFlag(variable *[]float64, name string, value []float64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Float64SliceVar(variable, name, value, usage)
 	return b
 }
 
-// WithFloat64SliceVarPPersistentFlag is like Float64SliceVar, but accepts a shorthand
-// letter that can be used after a single dash.
+// WithFloat64SliceVarPPersistentFlag is like Float64SliceVar, but accepts a
+// shorthand letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithFloat64SliceVarPPersistentFlag(variable *[]float64, name string, shorthand string, value []float64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Float64SliceVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithIntPersistentFlag defines an int flag with specified name, default value, and usage
-// string. The return value is the address of an int variable that stores the
-// value of the flag.
+// WithIntPersistentFlag defines an int flag with specified name, default value,
+// and usage string. The return value is the address of an int variable that
+// stores the value of the flag.
 func (b *CobraCmdBuilder) WithIntPersistentFlag(name string, value int, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int(name, value, usage)
 	return b
 }
 
-// WithIntPPersistentFlag is like Int, but accepts a shorthand letter that can be used
-// after a single dash.
+// WithIntPPersistentFlag is like Int, but accepts a shorthand letter that can
+// be used after a single dash.
 func (b *CobraCmdBuilder) WithIntPPersistentFlag(name string, shorthand string, value int, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IntP(name, shorthand, value, usage)
 	return b
 }
 
-// WithIntVarPersistentFlag defines an int flag with specified name, default value, and
-// usage string. The argument p points to an int variable in which to store the
-// value of the flag.
+// WithIntVarPersistentFlag defines an int flag with specified name, default
+// value, and usage string. The argument p points to an int variable in which to
+// store the value of the flag.
 func (b *CobraCmdBuilder) WithIntVarPersistentFlag(variable *int, name string, value int, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IntVar(variable, name, value, usage)
 	return b
 }
 
-// WithIntVarPPersistentFlag is like IntVar, but accepts a shorthand letter that can be
-// used after a single dash.
+// WithIntVarPPersistentFlag is like IntVar, but accepts a shorthand letter that
+// can be used after a single dash.
 func (b *CobraCmdBuilder) WithIntVarPPersistentFlag(variable *int, name string, shorthand string, value int, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IntVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithIntSlicePersistentFlag defines a []int flag with specified name, default value, and
-// usage string. The return value is the address of a []int variable that stores
-// the value of the flag.
+// WithIntSlicePersistentFlag defines a []int flag with specified name, default
+// value, and usage string. The return value is the address of a []int variable
+// that stores the value of the flag.
 func (b *CobraCmdBuilder) WithIntSlicePersistentFlag(name string, value []int, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IntSlice(name, value, usage)
 	return b
 }
 
-// WithIntSlicePPersistentFlag is like IntSlice, but accepts a shorthand letter that can
-// be used after a single dash.
+// WithIntSlicePPersistentFlag is like IntSlice, but accepts a shorthand letter
+// that can be used after a single dash.
 func (b *CobraCmdBuilder) WithIntSlicePPersistentFlag(name string, shorthand string, value []int, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IntSliceP(name, shorthand, value, usage)
 	return b
 }
 
-// WithIntSliceVarPersistentFlag defines a intSlice flag with specified name, default
-// value, and usage string. The argument p points to a []int variable in which
-// to store the value of the flag.
+// WithIntSliceVarPersistentFlag defines a intSlice flag with specified name,
+// default value, and usage string. The argument p points to a []int variable in
+// which to store the value of the flag.
 func (b *CobraCmdBuilder) WithIntSliceVarPersistentFlag(variable *[]int, name string, value []int, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IntSliceVar(variable, name, value, usage)
 	return b
 }
 
-// WithIntSliceVarPPersistentFlag is like IntSliceVar, but accepts a shorthand letter that
-// can be used after a single dash.
+// WithIntSliceVarPPersistentFlag is like IntSliceVar, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithIntSliceVarPPersistentFlag(variable *[]int, name string, shorthand string, value []int, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IntSliceVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithInt8PersistentFlag defines an int8 flag with specified name, default value, and
-// usage string. The return value is the address of an int8 variable that stores
-// the value of the flag.
+// WithInt8PersistentFlag defines an int8 flag with specified name, default
+// value, and usage string. The return value is the address of an int8 variable
+// that stores the value of the flag.
 func (b *CobraCmdBuilder) WithInt8PersistentFlag(name string, value int8, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int8(name, value, usage)
 	return b
 }
 
-// WithInt8PPersistentFlag is like Int8, but accepts a shorthand letter that can be used
-// after a single dash.
+// WithInt8PPersistentFlag is like Int8, but accepts a shorthand letter that can
+// be used after a single dash.
 func (b *CobraCmdBuilder) WithInt8PPersistentFlag(name string, shorthand string, value int8, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int8P(name, shorthand, value, usage)
 	return b
 }
 
-// WithInt8VarPersistentFlag defines an int8 flag with specified name, default value, and
-// usage string. The argument p points to an int8 variable in which to store the
-// value of the flag.
+// WithInt8VarPersistentFlag defines an int8 flag with specified name, default
+// value, and usage string. The argument p points to an int8 variable in which
+// to store the value of the flag.
 func (b *CobraCmdBuilder) WithInt8VarPersistentFlag(variable *int8, name string, value int8, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int8Var(variable, name, value, usage)
 	return b
 }
 
-// WithInt8VarPPersistentFlag is like Int8Var, but accepts a shorthand letter that can be
-// used after a single dash.
+// WithInt8VarPPersistentFlag is like Int8Var, but accepts a shorthand letter
+// that can be used after a single dash.
 func (b *CobraCmdBuilder) WithInt8VarPPersistentFlag(variable *int8, name string, shorthand string, value int8, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int8VarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithInt16PersistentFlag defines an int16 flag with specified name, default value, and
-// usage string. The return value is the address of an int16 variable that
-// stores the value of the flag.
+// WithInt16PersistentFlag defines an int16 flag with specified name, default
+// value, and usage string. The return value is the address of an int16 variable
+// that stores the value of the flag.
 func (b *CobraCmdBuilder) WithInt16PersistentFlag(name string, value int16, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int16(name, value, usage)
 	return b
 }
 
-// WithInt16PPersistentFlag is like Int16, but accepts a shorthand letter that can be used
-// after a single dash.
+// WithInt16PPersistentFlag is like Int16, but accepts a shorthand letter that
+// can be used after a single dash.
 func (b *CobraCmdBuilder) WithInt16PPersistentFlag(name string, shorthand string, value int16, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int16P(name, shorthand, value, usage)
 	return b
 }
 
-// WithInt16VarPersistentFlag defines an int16 flag with specified name, default value,
-// and usage string. The argument p points to an int16 variable in which to
-// store the value of the flag.
+// WithInt16VarPersistentFlag defines an int16 flag with specified name, default
+// value, and usage string. The argument p points to an int16 variable in which
+// to store the value of the flag.
 func (b *CobraCmdBuilder) WithInt16VarPersistentFlag(variable *int16, name string, value int16, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int16Var(variable, name, value, usage)
 	return b
 }
 
-// WithInt16VarPPersistentFlag is like Int16Var, but accepts a shorthand letter that can
-// be used after a single dash.
+// WithInt16VarPPersistentFlag is like Int16Var, but accepts a shorthand letter
+// that can be used after a single dash.
 func (b *CobraCmdBuilder) WithInt16VarPPersistentFlag(variable *int16, name string, shorthand string, value int16, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int16VarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithInt32PersistentFlag defines an int32 flag with specified name, default value, and
-// usage string. The return value is the address of an int32 variable that
-// stores the value of the flag.
+// WithInt32PersistentFlag defines an int32 flag with specified name, default
+// value, and usage string. The return value is the address of an int32 variable
+// that stores the value of the flag.
 func (b *CobraCmdBuilder) WithInt32PersistentFlag(name string, value int32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int32(name, value, usage)
 	return b
 }
 
-// WithInt32PPersistentFlag is like Int32, but accepts a shorthand letter that can be used
-// after a single dash.
+// WithInt32PPersistentFlag is like Int32, but accepts a shorthand letter that
+// can be used after a single dash.
 func (b *CobraCmdBuilder) WithInt32PPersistentFlag(name string, shorthand string, value int32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int32P(name, shorthand, value, usage)
 	return b
 }
 
-// WithInt32VarPersistentFlag defines an int32 flag with specified name, default value,
-// and usage string. The argument p points to an int32 variable in which to
-// store the value of the flag.
+// WithInt32VarPersistentFlag defines an int32 flag with specified name, default
+// value, and usage string. The argument p points to an int32 variable in which
+// to store the value of the flag.
 func (b *CobraCmdBuilder) WithInt32VarPersistentFlag(variable *int32, name string, value int32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int32Var(variable, name, value, usage)
 	return b
 }
 
-// WithInt32VarPPersistentFlag is like Int32Var, but accepts a shorthand letter that can
-// be used after a single dash.
+// WithInt32VarPPersistentFlag is like Int32Var, but accepts a shorthand letter
+// that can be used after a single dash.
 func (b *CobraCmdBuilder) WithInt32VarPPersistentFlag(variable *int32, name string, shorthand string, value int32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int32VarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithInt32SlicePersistentFlag defines a []int32 flag with specified name, default value,
-// and usage string. The return value is the address of a []int32 variable that
-// stores the value of the flag.
+// WithInt32SlicePersistentFlag defines a []int32 flag with specified name,
+// default value, and usage string. The return value is the address of a []int32
+// variable that stores the value of the flag.
 func (b *CobraCmdBuilder) WithInt32SlicePersistentFlag(name string, value []int32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int32Slice(name, value, usage)
 	return b
 }
 
-// WithInt32SlicePPersistentFlag is like Int32Slice, but accepts a shorthand letter that
-// can be used after a single dash.
+// WithInt32SlicePPersistentFlag is like Int32Slice, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithInt32SlicePPersistentFlag(name string, shorthand string, value []int32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int32SliceP(name, shorthand, value, usage)
 	return b
 }
 
-// WithInt32SliceVarPersistentFlag defines a int32Slice flag with specified name, default
-// value, and usage string. The argument p points to a []int32 variable in which
-// to store the value of the flag.
+// WithInt32SliceVarPersistentFlag defines a int32Slice flag with specified
+// name, default value, and usage string. The argument p points to a []int32
+// variable in which to store the value of the flag.
 func (b *CobraCmdBuilder) WithInt32SliceVarPersistentFlag(variable *[]int32, name string, value []int32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int32SliceVar(variable, name, value, usage)
 	return b
 }
 
-// WithInt32SliceVarPPersistentFlag is like Int32SliceVar, but accepts a shorthand letter
-// that can be used after a single dash.
+// WithInt32SliceVarPPersistentFlag is like Int32SliceVar, but accepts a
+// shorthand letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithInt32SliceVarPPersistentFlag(variable *[]int32, name string, shorthand string, value []int32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int32SliceVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithInt64PersistentFlag defines an int64 flag with specified name, default value, and
-// usage string. The return value is the address of an int64 variable that
-// stores the value of the flag.
+// WithInt64PersistentFlag defines an int64 flag with specified name, default
+// value, and usage string. The return value is the address of an int64 variable
+// that stores the value of the flag.
 func (b *CobraCmdBuilder) WithInt64PersistentFlag(name string, value int64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int64(name, value, usage)
 	return b
 }
 
-// WithInt64PPersistentFlag is like Int64, but accepts a shorthand letter that can be used
-// after a single dash.
+// WithInt64PPersistentFlag is like Int64, but accepts a shorthand letter that
+// can be used after a single dash.
 func (b *CobraCmdBuilder) WithInt64PPersistentFlag(name string, shorthand string, value int64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int64P(name, shorthand, value, usage)
 	return b
 }
 
-// WithInt64VarPersistentFlag defines an int64 flag with specified name, default value,
-// and usage string. The argument p points to an int64 variable in which to
-// store the value of the flag.
+// WithInt64VarPersistentFlag defines an int64 flag with specified name, default
+// value, and usage string. The argument p points to an int64 variable in which
+// to store the value of the flag.
 func (b *CobraCmdBuilder) WithInt64VarPersistentFlag(variable *int64, name string, value int64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int64Var(variable, name, value, usage)
 	return b
 }
 
-// WithInt64VarPPersistentFlag is like Int64Var, but accepts a shorthand letter that can
-// be used after a single dash.
+// WithInt64VarPPersistentFlag is like Int64Var, but accepts a shorthand letter
+// that can be used after a single dash.
 func (b *CobraCmdBuilder) WithInt64VarPPersistentFlag(variable *int64, name string, shorthand string, value int64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int64VarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithInt64SlicePersistentFlag defines a []int64 flag with specified name, default value,
-// and usage string. The return value is the address of a []int64 variable that
-// stores the value of the flag.
+// WithInt64SlicePersistentFlag defines a []int64 flag with specified name,
+// default value, and usage string. The return value is the address of a []int64
+// variable that stores the value of the flag.
 func (b *CobraCmdBuilder) WithInt64SlicePersistentFlag(name string, value []int64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int64Slice(name, value, usage)
 	return b
 }
 
-// WithInt64SlicePPersistentFlag is like Int64Slice, but accepts a shorthand letter that
-// can be used after a single dash.
+// WithInt64SlicePPersistentFlag is like Int64Slice, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithInt64SlicePPersistentFlag(name string, shorthand string, value []int64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int64SliceP(name, shorthand, value, usage)
 	return b
 }
 
-// WithInt64SliceVarPersistentFlag defines a int64Slice flag with specified name, default
-// value, and usage string. The argument p points to a []int64 variable in which
-// to store the value of the flag.
+// WithInt64SliceVarPersistentFlag defines a int64Slice flag with specified
+// name, default value, and usage string. The argument p points to a []int64
+// variable in which to store the value of the flag.
 func (b *CobraCmdBuilder) WithInt64SliceVarPersistentFlag(variable *[]int64, name string, value []int64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int64SliceVar(variable, name, value, usage)
 	return b
 }
 
-// WithInt64SliceVarPPersistentFlag is like Int64SliceVar, but accepts a shorthand letter
-// that can be used after a single dash.
+// WithInt64SliceVarPPersistentFlag is like Int64SliceVar, but accepts a
+// shorthand letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithInt64SliceVarPPersistentFlag(variable *[]int64, name string, shorthand string, value []int64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Int64SliceVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithUintPersistentFlag defines a uint flag with specified name, default value, and
-// usage string. The return value is the address of a uint variable that stores
-// the value of the flag.
+// WithUintPersistentFlag defines a uint flag with specified name, default
+// value, and usage string. The return value is the address of a uint variable
+// that stores the value of the flag.
 func (b *CobraCmdBuilder) WithUintPersistentFlag(name string, value uint, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Uint(name, value, usage)
 	return b
 }
 
-// WithIntPPersistentFlag is like Uint, but accepts a shorthand letter that can be used
-// after a single dash.
+// WithIntPPersistentFlag is like Uint, but accepts a shorthand letter that can
+// be used after a single dash.
 func (b *CobraCmdBuilder) WithUintPPersistentFlag(name string, shorthand string, value uint, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().UintP(name, shorthand, value, usage)
 	return b
 }
 
-// WithUintVarPersistentFlag defines a uint flag with specified name, default value, and
-// usage string. The argument p points to a uint variable in which to store the
-// value of the flag.
+// WithUintVarPersistentFlag defines a uint flag with specified name, default
+// value, and usage string. The argument p points to a uint variable in which to
+// store the value of the flag.
 func (b *CobraCmdBuilder) WithUintVarPersistentFlag(variable *uint, name string, value uint, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().UintVar(variable, name, value, usage)
 	return b
 }
 
-// WithUintVarPPersistentFlag is like UintVar, but accepts a shorthand letter that can be
-// used after a single dash.
+// WithUintVarPPersistentFlag is like UintVar, but accepts a shorthand letter
+// that can be used after a single dash.
 func (b *CobraCmdBuilder) WithUintVarPPersistentFlag(variable *uint, name string, shorthand string, value uint, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().UintVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithUintSlicePersistentFlag defines a []uint flag with specified name, default value,
-// and usage string. The return value is the address of a []uint variable that
-// stores the value of the flag.
+// WithUintSlicePersistentFlag defines a []uint flag with specified name,
+// default value, and usage string. The return value is the address of a []uint
+// variable that stores the value of the flag.
 func (b *CobraCmdBuilder) WithUintSlicePersistentFlag(name string, value []uint, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().UintSlice(name, value, usage)
 	return b
 }
 
-// WithUintSlicePPersistentFlag is like UintSlice, but accepts a shorthand letter that can
-// be used after a single dash.
+// WithUintSlicePPersistentFlag is like UintSlice, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithUintSlicePPersistentFlag(name string, shorthand string, value []uint, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().UintSliceP(name, shorthand, value, usage)
 	return b
 }
 
-// WithUintSliceVarPersistentFlag defines a uintSlice flag with specified name, default
-// value, and usage string. The argument p points to a []uint variable in which
-// to store the value of the flag.
+// WithUintSliceVarPersistentFlag defines a uintSlice flag with specified name,
+// default value, and usage string. The argument p points to a []uint variable
+// in which to store the value of the flag.
 func (b *CobraCmdBuilder) WithUintSliceVarPersistentFlag(variable *[]uint, name string, value []uint, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().UintSliceVar(variable, name, value, usage)
 	return b
 }
 
-// WithUintSliceVarPPersistentFlag is like UintSliceVar, but accepts a shorthand letter
-// that can be used after a single dash.
+// WithUintSliceVarPPersistentFlag is like UintSliceVar, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithUintSliceVarPPersistentFlag(variable *[]uint, name string, shorthand string, value []uint, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().UintSliceVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithUint8PersistentFlag defines a uint8 flag with specified name, default value, and
-// usage string. The return value is the address of a uint8 variable that stores
-// the value of the flag.
+// WithUint8PersistentFlag defines a uint8 flag with specified name, default
+// value, and usage string. The return value is the address of a uint8 variable
+// that stores the value of the flag.
 func (b *CobraCmdBuilder) WithUint8PersistentFlag(name string, value uint8, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Uint8(name, value, usage)
 	return b
 }
 
-// WithUint8PPersistentFlag is like Uint8, but accepts a shorthand letter that can be used
-// after a single dash.
+// WithUint8PPersistentFlag is like Uint8, but accepts a shorthand letter that
+// can be used after a single dash.
 func (b *CobraCmdBuilder) WithUint8PPersistentFlag(name string, shorthand string, value uint8, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Uint8P(name, shorthand, value, usage)
 	return b
 }
 
-// WithUint8VarPersistentFlag defines a uint8 flag with specified name, default value, and
-// usage string. The argument p points to a uint8 variable in which to store the
-// value of the flag.
+// WithUint8VarPersistentFlag defines a uint8 flag with specified name, default
+// value, and usage string. The argument p points to a uint8 variable in which
+// to store the value of the flag.
 func (b *CobraCmdBuilder) WithUint8VarPersistentFlag(variable *uint8, name string, value uint8, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Uint8Var(variable, name, value, usage)
 	return b
 }
 
-// WithUint8VarPPersistentFlag is like Uint8Var, but accepts a shorthand letter that can
-// be used after a single dash.
+// WithUint8VarPPersistentFlag is like Uint8Var, but accepts a shorthand letter
+// that can be used after a single dash.
 func (b *CobraCmdBuilder) WithUint8VarPPersistentFlag(variable *uint8, name string, shorthand string, value uint8, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Uint8VarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithUint16PersistentFlag defines a uint flag with specified name, default value, and
-// usage string. The return value is the address of a uint variable that stores
-// the value of the flag.
+// WithUint16PersistentFlag defines a uint flag with specified name, default
+// value, and usage string. The return value is the address of a uint variable
+// that stores the value of the flag.
 func (b *CobraCmdBuilder) WithUint16PersistentFlag(name string, value uint16, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Uint16(name, value, usage)
 	return b
 }
 
-// WithUint16PPersistentFlag is like Uint16, but accepts a shorthand letter that can be
-// used after a single dash.
+// WithUint16PPersistentFlag is like Uint16, but accepts a shorthand letter that
+// can be used after a single dash.
 func (b *CobraCmdBuilder) WithUint16PPersistentFlag(name string, shorthand string, value uint16, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Uint16P(name, shorthand, value, usage)
 	return b
 }
 
-// WithUint16VarPersistentFlag defines a uint flag with specified name, default value, and
-// usage string. The argument p points to a uint variable in which to store the
-// value of the flag.
+// WithUint16VarPersistentFlag defines a uint flag with specified name, default
+// value, and usage string. The argument p points to a uint variable in which to
+// store the value of the flag.
 func (b *CobraCmdBuilder) WithUint16VarPersistentFlag(variable *uint16, name string, value uint16, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Uint16Var(variable, name, value, usage)
 	return b
 }
 
-// WithUint16VarPPersistentFlag is like Uint16Var, but accepts a shorthand letter that can
-// be used after a single dash.
+// WithUint16VarPPersistentFlag is like Uint16Var, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithUint16VarPPersistentFlag(variable *uint16, name string, shorthand string, value uint16, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Uint16VarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithUint32PersistentFlag defines a uint32 flag with specified name, default value, and
-// usage string. The return value is the address of a uint32 variable that
-// stores the value of the flag.
+// WithUint32PersistentFlag defines a uint32 flag with specified name, default
+// value, and usage string. The return value is the address of a uint32 variable
+// that stores the value of the flag.
 func (b *CobraCmdBuilder) WithUint32PersistentFlag(name string, value uint32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Uint32(name, value, usage)
 	return b
 }
 
-// WithUint32PPersistentFlag is like Uint32, but accepts a shorthand letter that can be
-// used after a single dash.
+// WithUint32PPersistentFlag is like Uint32, but accepts a shorthand letter that
+// can be used after a single dash.
 func (b *CobraCmdBuilder) WithUint32PPersistentFlag(name string, shorthand string, value uint32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Uint32P(name, shorthand, value, usage)
 	return b
 }
 
-// WithUint32VarPersistentFlag defines a uint32 flag with specified name, default value,
-// and usage string. The argument p points to a uint32 variable in which to
-// store the value of the flag.
+// WithUint32VarPersistentFlag defines a uint32 flag with specified name,
+// default value, and usage string. The argument p points to a uint32 variable
+// in which to store the value of the flag.
 func (b *CobraCmdBuilder) WithUint32VarPersistentFlag(variable *uint32, name string, value uint32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Uint32Var(variable, name, value, usage)
 	return b
 }
 
-// WithUint32VarPPersistentFlag is like Uint32Var, but accepts a shorthand letter that can
-// be used after a single dash.
+// WithUint32VarPPersistentFlag is like Uint32Var, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithUint32VarPPersistentFlag(variable *uint32, name string, shorthand string, value uint32, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Uint32VarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithUint64PersistentFlag defines a uint64 flag with specified name, default value, and
-// usage string. The return value is the address of a uint64 variable that
-// stores the value of the flag.
+// WithUint64PersistentFlag defines a uint64 flag with specified name, default
+// value, and usage string. The return value is the address of a uint64 variable
+// that stores the value of the flag.
 func (b *CobraCmdBuilder) WithUint64PersistentFlag(name string, value uint64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Uint64(name, value, usage)
 	return b
 }
 
-// WithUint64PPersistentFlag is like Uint64, but accepts a shorthand letter that can be
-// used after a single dash.
+// WithUint64PPersistentFlag is like Uint64, but accepts a shorthand letter that
+// can be used after a single dash.
 func (b *CobraCmdBuilder) WithUint64PPersistentFlag(name string, shorthand string, value uint64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Uint64P(name, shorthand, value, usage)
 	return b
 }
 
-// WithUint64VarPersistentFlag defines a uint64 flag with specified name, default value,
-// and usage string. The argument p points to a uint64 variable in which to
-// store the value of the flag.
+// WithUint64VarPersistentFlag defines a uint64 flag with specified name,
+// default value, and usage string. The argument p points to a uint64 variable
+// in which to store the value of the flag.
 func (b *CobraCmdBuilder) WithUint64VarPersistentFlag(variable *uint64, name string, value uint64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Uint64Var(variable, name, value, usage)
 	return b
 }
 
-// WithUint64VarPPersistentFlag is like Uint64Var, but accepts a shorthand letter that can
-// be used after a single dash.
+// WithUint64VarPPersistentFlag is like Uint64Var, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithUint64VarPPersistentFlag(variable *uint64, name string, shorthand string, value uint64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Uint64VarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithStringPersistentFlag defines a string flag with specified name, default value, and
-// usage string. The return value is the address of a string variable that
-// stores the value of the flag.
+// WithStringPersistentFlag defines a string flag with specified name, default
+// value, and usage string. The return value is the address of a string variable
+// that stores the value of the flag.
 func (b *CobraCmdBuilder) WithStringPersistentFlag(name string, value string, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().String(name, value, usage)
 	return b
 }
 
-// WithStringPPersistentFlag is like String, but accepts a shorthand letter that can be
-// used after a single dash.
+// WithStringPPersistentFlag is like String, but accepts a shorthand letter that
+// can be used after a single dash.
 func (b *CobraCmdBuilder) WithStringPPersistentFlag(name string, shorthand string, value string, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().StringP(name, shorthand, value, usage)
 	return b
 }
 
-// WithStringVarPersistentFlag defines a string flag with specified name, default value,
-// and usage string. The argument p points to a string variable in which to
-// store the value of the flag.
+// WithStringVarPersistentFlag defines a string flag with specified name,
+// default value, and usage string. The argument p points to a string variable
+// in which to store the value of the flag.
 func (b *CobraCmdBuilder) WithStringVarPersistentFlag(variable *string, name string, value string, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().StringVar(variable, name, value, usage)
 	return b
 }
 
-// WithStringVarPPersistentFlag is like StringVar, but accepts a shorthand letter that can
-// be used after a single dash.
+// WithStringVarPPersistentFlag is like StringVar, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithStringVarPPersistentFlag(variable *string, name string, shorthand string, value string, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().StringVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithStringSlicePersistentFlag defines a string flag with specified name, default value,
-// and usage string. The return value is the address of a []string variable that
-// stores the value of the flag. Compared to StringArray flags, StringSlice
-// flags take comma-separated value as arguments and split them accordingly.
+// WithStringSlicePersistentFlag defines a string flag with specified name,
+// default value, and usage string. The return value is the address of a
+// []string variable that stores the value of the flag. Compared to StringArray
+// flags, StringSlice flags take comma-separated value as arguments and split
+// them accordingly.
 // For example:
 //
 //	--ss="v1,v2" --ss="v3"
@@ -2202,16 +2289,16 @@ func (b *CobraCmdBuilder) WithStringSlicePersistentFlag(name string, value []str
 	return b
 }
 
-// WithStringSlicePPersistentFlag is like StringSlice, but accepts a shorthand letter that
-// can be used after a single dash.
+// WithStringSlicePPersistentFlag is like StringSlice, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithStringSlicePPersistentFlag(name string, shorthand string, value []string, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().StringSliceP(name, shorthand, value, usage)
 	return b
 }
 
-// WithStringSliceVarPersistentFlag defines a string flag with specified name, default
-// value, and usage string. The argument p points to a []string variable in
-// which to store the value of the flag. Compared to StringArray flags,
+// WithStringSliceVarPersistentFlag defines a string flag with specified name,
+// default value, and usage string. The argument p points to a []string variable
+// in which to store the value of the flag. Compared to StringArray flags,
 // StringSlice flags take comma-separated value as arguments and split them
 // accordingly.
 // For example:
@@ -2226,242 +2313,242 @@ func (b *CobraCmdBuilder) WithStringSliceVarPersistentFlag(variable *[]string, n
 	return b
 }
 
-// WithStringSliceVarPPersistentFlag is like StringSliceVar, but accepts a shorthand
-// letter that can be used after a single dash.
+// WithStringSliceVarPPersistentFlag is like StringSliceVar, but accepts a
+// shorthand letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithStringSliceVarPPersistentFlag(variable *[]string, name string, shorthand string, value []string, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().StringSliceVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithStringArrayPersistentFlag defines a string flag with specified name, default value,
-// and usage string. The return value is the address of a []string variable that
-// stores the value of the flag. The value of each argument will not try to be
-// separated by comma. Use a StringSlice for that.
+// WithStringArrayPersistentFlag defines a string flag with specified name,
+// default value, and usage string. The return value is the address of a
+// []string variable that stores the value of the flag. The value of each
+// argument will not try to be separated by comma. Use a StringSlice for that.
 func (b *CobraCmdBuilder) WithStringArrayPersistentFlag(name string, value []string, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().StringArray(name, value, usage)
 	return b
 }
 
-// WithStringArrayPPersistentFlag is like StringArray, but accepts a shorthand letter that
-// can be used after a single dash.
+// WithStringArrayPPersistentFlag is like StringArray, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithStringArrayPPersistentFlag(name string, shorthand string, value []string, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().StringArrayP(name, shorthand, value, usage)
 	return b
 }
 
-// WithStringArrayVarPersistentFlag defines a string flag with specified name, default
-// value, and usage string. The argument p points to a []string variable in
-// which to store the values of the multiple flags. The value of each argument
-// will not try to be separated by comma. Use a StringSlice for that.
+// WithStringArrayVarPersistentFlag defines a string flag with specified name,
+// default value, and usage string. The argument p points to a []string variable
+// in which to store the values of the multiple flags. The value of each
+// argument will not try to be separated by comma. Use a StringSlice for that.
 func (b *CobraCmdBuilder) WithStringArrayVarPersistentFlag(variable *[]string, name string, value []string, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().StringArrayVar(variable, name, value, usage)
 	return b
 }
 
-// WithStringArrayVarPPersistentFlag is like StringArrayVar, but accepts a shorthand
-// letter that can be used after a single dash.
+// WithStringArrayVarPPersistentFlag is like StringArrayVar, but accepts a
+// shorthand letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithStringArrayVarPPersistentFlag(variable *[]string, name string, shorthand string, value []string, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().StringArrayVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithStringToIntPersistentFlag defines a string flag with specified name, default value,
-// and usage string. The return value is the address of a map[string]int
-// variable that stores the value of the flag. The value of each argument will
-// not try to be separated by comma
+// WithStringToIntPersistentFlag defines a string flag with specified name,
+// default value, and usage string. The return value is the address of a
+// map[string]int variable that stores the value of the flag. The value of each
+// argument will not try to be separated by comma
 func (b *CobraCmdBuilder) WithStringToIntPersistentFlag(name string, value map[string]int, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().StringToInt(name, value, usage)
 	return b
 }
 
-// WithStringToIntPPersistentFlag is like StringToInt, but accepts a shorthand letter that
-// can be used after a single dash.
+// WithStringToIntPPersistentFlag is like StringToInt, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithStringToIntPPersistentFlag(name string, shorthand string, value map[string]int, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().StringToIntP(name, shorthand, value, usage)
 	return b
 }
 
-// WithStringToIntVarPersistentFlag defines a string flag with specified name, default
-// value, and usage string. The argument p points to a map[string]int variable
-// in which to store the values of the multiple flags. The value of each
-// argument will not try to be separated by comma
+// WithStringToIntVarPersistentFlag defines a string flag with specified name,
+// default value, and usage string. The argument p points to a map[string]int
+// variable in which to store the values of the multiple flags. The value of
+// each argument will not try to be separated by comma
 func (b *CobraCmdBuilder) WithStringToIntVarPersistentFlag(variable *map[string]int, name string, value map[string]int, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().StringToIntVar(variable, name, value, usage)
 	return b
 }
 
-// WithStringToIntVarPPersistentFlag is like StringToIntVar, but accepts a shorthand
-// letter that can be used after a single dash.
+// WithStringToIntVarPPersistentFlag is like StringToIntVar, but accepts a
+// shorthand letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithStringToIntVarPPersistentFlag(variable *map[string]int, name string, shorthand string, value map[string]int, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().StringToIntVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithStringToInt64PersistentFlag defines a string flag with specified name, default
-// value, and usage string. The return value is the address of a map[string
-// ]int64 variable that stores the value of the flag. The value of each argument
-// will not try to be separated by comma
+// WithStringToInt64PersistentFlag defines a string flag with specified name,
+// default value, and usage string. The return value is the address of a
+// map[string]int64 variable that stores the value of the flag. The value of
+// each argument will not try to be separated by comma
 func (b *CobraCmdBuilder) WithStringToInt64PersistentFlag(name string, value map[string]int64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().StringToInt64(name, value, usage)
 	return b
 }
 
-// WithStringToInt64PPersistentFlag is like StringToInt64, but accepts a shorthand letter
-// that can be used after a single dash.
+// WithStringToInt64PPersistentFlag is like StringToInt64, but accepts a
+// shorthand letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithStringToInt64PPersistentFlag(name string, shorthand string, value map[string]int64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().StringToInt64P(name, shorthand, value, usage)
 	return b
 }
 
-// WithStringToInt64VarPersistentFlag defines a string flag with specified name, default
-// value, and usage string. The argument p point64s to a map[string]int64
-// variable in which to store the values of the multiple flags. The value of
-// each argument will not try to be separated by comma
+// WithStringToInt64VarPersistentFlag defines a string flag with specified name,
+// default value, and usage string. The argument p point64s to a
+// map[string]int64 variable in which to store the values of the multiple flags.
+// The value of each argument will not try to be separated by comma
 func (b *CobraCmdBuilder) WithStringToInt64VarPersistentFlag(variable *map[string]int64, name string, value map[string]int64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().StringToInt64Var(variable, name, value, usage)
 	return b
 }
 
-// WithStringToInt64VarPPersistentFlag is like StringToInt64Var, but accepts a shorthand
-// letter that can be used after a single dash.
+// WithStringToInt64VarPPersistentFlag is like StringToInt64Var, but accepts a
+// shorthand letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithStringToInt64VarPPersistentFlag(variable *map[string]int64, name string, shorthand string, value map[string]int64, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().StringToInt64VarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithIPPersistentFlag defines an net.IP flag with specified name, default value, and
-// usage string. The return value is the address of an net.IP variable that
-// stores the value of the flag.
+// WithIPPersistentFlag defines an net.IP flag with specified name, default
+// value, and usage string. The return value is the address of an net.IP
+// variable that stores the value of the flag.
 func (b *CobraCmdBuilder) WithIPPersistentFlag(name string, value net.IP, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IP(name, value, usage)
 	return b
 }
 
-// WithIPPPersistentFlag is like IP, but accepts a shorthand letter that can be used after
-// a single dash.
+// WithIPPPersistentFlag is like IP, but accepts a shorthand letter that can be
+// used after a single dash.
 func (b *CobraCmdBuilder) WithIPPPersistentFlag(name string, shorthand string, value net.IP, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IPP(name, shorthand, value, usage)
 	return b
 }
 
-// WithIPVarPersistentFlag defines an net.IP flag with specified name, default value, and
-// usage string. The argument p points to an net.IP variable in which to store
-// the value of the flag.
+// WithIPVarPersistentFlag defines an net.IP flag with specified name, default
+// value, and usage string. The argument p points to an net.IP variable in which
+// to store the value of the flag.
 func (b *CobraCmdBuilder) WithIPVarPersistentFlag(variable *net.IP, name string, value net.IP, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IPVar(variable, name, value, usage)
 	return b
 }
 
-// WithIPVarPPersistentFlag is like IPVar, but accepts a shorthand letter that can be used
-// after a single dash.
+// WithIPVarPPersistentFlag is like IPVar, but accepts a shorthand letter that
+// can be used after a single dash.
 func (b *CobraCmdBuilder) WithIPVarPPersistentFlag(variable *net.IP, name string, shorthand string, value net.IP, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IPVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithIPSlicePersistentFlag defines a []net.IP flag with specified name, default value,
-// and usage string. The return value is the address of a []net.IP variable that
-// stores the value of that flag.
+// WithIPSlicePersistentFlag defines a []net.IP flag with specified name,
+// default value, and usage string. The return value is the address of a
+// []net.IP variable that stores the value of that flag.
 func (b *CobraCmdBuilder) WithIPSlicePersistentFlag(name string, value []net.IP, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IPSlice(name, value, usage)
 	return b
 }
 
-// WithIPSlicePPersistentFlag is like IPSlice, but accepts a shorthand letter that can be
-// used after a single dash.
+// WithIPSlicePPersistentFlag is like IPSlice, but accepts a shorthand letter
+// that can be used after a single dash.
 func (b *CobraCmdBuilder) WithIPSlicePPersistentFlag(name string, shorthand string, value []net.IP, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IPSliceP(name, shorthand, value, usage)
 	return b
 }
 
-// WithIPSliceVarPersistentFlag defines a ipSlice flag with specified name, default value,
-// and usage string. The argument p points to a []net.IP variable in which to
-// store the value of the flag.
+// WithIPSliceVarPersistentFlag defines a ipSlice flag with specified name,
+// default value, and usage string. The argument p points to a []net.IP variable
+// in which to store the value of the flag.
 func (b *CobraCmdBuilder) WithIPSliceVarPersistentFlag(variable *[]net.IP, name string, value []net.IP, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IPSliceVar(variable, name, value, usage)
 	return b
 }
 
-// WithIPSliceVarPPersistentFlag is like IPSliceVar, but accepts a shorthand letter that
-// can be used after a single dash.
+// WithIPSliceVarPPersistentFlag is like IPSliceVar, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithIPSliceVarPPersistentFlag(variable *[]net.IP, name string, shorthand string, value []net.IP, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IPSliceVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithIPMaskPersistentFlag defines an net.IPMask flag with specified name, default value,
-// and usage string. The return value is the address of an net.IPMask variable
-// that stores the value of the flag.
+// WithIPMaskPersistentFlag defines an net.IPMask flag with specified name,
+// default value, and usage string. The return value is the address of an
+// net.IPMask variable that stores the value of the flag.
 func (b *CobraCmdBuilder) WithIPMaskPersistentFlag(name string, value net.IPMask, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IPMask(name, value, usage)
 	return b
 }
 
-// WithIPMaskPPersistentFlag is like IPMask, but accepts a shorthand letter that can be
-// used after a single dash.
+// WithIPMaskPPersistentFlag is like IPMask, but accepts a shorthand letter that
+// can be used after a single dash.
 func (b *CobraCmdBuilder) WithIPMaskPPersistentFlag(name string, shorthand string, value net.IPMask, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IPMaskP(name, shorthand, value, usage)
 	return b
 }
 
-// WithIPMaskVarPersistentFlag defines an net.IPMask flag with specified name, default
-// value, and usage string. The argument p points to an net.IPMask variable in
-// which to store the value of the flag.
+// WithIPMaskVarPersistentFlag defines an net.IPMask flag with specified name,
+// default value, and usage string. The argument p points to an net.IPMask
+// variable in which to store the value of the flag.
 func (b *CobraCmdBuilder) WithIPMaskVarPersistentFlag(variable *net.IPMask, name string, value net.IPMask, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IPMaskVar(variable, name, value, usage)
 	return b
 }
 
-// WithIPMaskVarPPersistentFlag is like IPMaskVar, but accepts a shorthand letter that can
-// be used after a single dash.
+// WithIPMaskVarPPersistentFlag is like IPMaskVar, but accepts a shorthand
+// letter that can be used after a single dash.
 func (b *CobraCmdBuilder) WithIPMaskVarPPersistentFlag(variable *net.IPMask, name string, shorthand string, value net.IPMask, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IPMaskVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithIPNetPersistentFlag defines an net.IPNet flag with specified name, default value,
-// and usage string. The return value is the address of an net.IPNet variable
-// that stores the value of the flag.
+// WithIPNetPersistentFlag defines an net.IPNet flag with specified name,
+// default value, and usage string. The return value is the address of an
+// net.IPNet variable that stores the value of the flag.
 func (b *CobraCmdBuilder) WithIPNetPersistentFlag(name string, value net.IPNet, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IPNet(name, value, usage)
 	return b
 }
 
-// WithIPNetPPersistentFlag is like IPNet, but accepts a shorthand letter that can be used
-// after a single dash.
+// WithIPNetPPersistentFlag is like IPNet, but accepts a shorthand letter that
+// can be used after a single dash.
 func (b *CobraCmdBuilder) WithIPNetPPersistentFlag(name string, shorthand string, value net.IPNet, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IPNetP(name, shorthand, value, usage)
 	return b
 }
 
-// WithIPNetVarPersistentFlag defines an net.IPNet flag with specified name, default
-// value, and usage string. The argument p points to an net.IPNet variable in
-// which to store the value of the flag.
+// WithIPNetVarPersistentFlag defines an net.IPNet flag with specified name,
+// default value, and usage string. The argument p points to an net.IPNet
+// variable in which to store the value of the flag.
 func (b *CobraCmdBuilder) WithIPNetVarPersistentFlag(variable *net.IPNet, name string, value net.IPNet, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IPNetVar(variable, name, value, usage)
 	return b
 }
 
-// WithIPNetVarPPersistentFlag is like IPNetVar, but accepts a shorthand letter that can
-// be used after a single dash.
+// WithIPNetVarPPersistentFlag is like IPNetVar, but accepts a shorthand letter
+// that can be used after a single dash.
 func (b *CobraCmdBuilder) WithIPNetVarPPersistentFlag(variable *net.IPNet, name string, shorthand string, value net.IPNet, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().IPNetVarP(variable, name, shorthand, value, usage)
 	return b
 }
 
-// WithVarPersistentFlag defines a flag with the specified name and usage string. The type
-// and value of the flag are represented by the first argument, of type Value,
-// which typically holds a user-defined implementation of Value. For instance,
-// the caller could create a flag that turns a comma-separated string into a
-// slice of strings by giving the slice the methods of Value; in particular, Set
-// would decompose the comma-separated string into the slice.
+// WithVarPersistentFlag defines a flag with the specified name and usage
+// string. The type and value of the flag are represented by the first argument,
+// of type Value, which typically holds a user-defined implementation of Value.
+// For instance, the caller could create a flag that turns a comma-separated
+// string into a slice of strings by giving the slice the methods of Value; in
+// particular, Set would decompose the comma-separated string into the slice.
 func (b *CobraCmdBuilder) WithVarPersistentFlag(value pflag.Value, name string, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().Var(value, name, usage)
 	return b
 }
 
-// WithVarPPersistentFlag is like Var, but accepts a shorthand letter that can be used
-// after a single dash.
+// WithVarPPersistentFlag is like Var, but accepts a shorthand letter that can
+// be used after a single dash.
 func (b *CobraCmdBuilder) WithVarPPersistentFlag(value pflag.Value, name string, shorthand string, usage string) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().VarP(value, name, shorthand, usage)
 	return b
@@ -2499,13 +2586,15 @@ func (b *CobraCmdBuilder) MarkPersistentFlagShorthandDeprecated(name string, usa
 	return b
 }
 
-// WithFlagSet sets the FlagSet for for the underlying cobra Command
+// WithFlagSet adds one FlagSet to another. If a flag is already present in f
+// the flag from newSet will be ignored.
 func (b *CobraCmdBuilder) WithFlagSet(flagset *pflag.FlagSet) *CobraCmdBuilder {
 	b.cmd.Flags().AddFlagSet(flagset)
 	return b
 }
 
-// WithPersistentFlagSet sets the PersistentFlagSet for for the underlying cobra Command
+// WithPersistentFlagSet adds one FlagSet to another. If a flag is already
+// present in f the flag from newSet will be ignored.
 func (b *CobraCmdBuilder) WithPersistentFlagSet(flagset *pflag.FlagSet) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().AddFlagSet(flagset)
 	return b
