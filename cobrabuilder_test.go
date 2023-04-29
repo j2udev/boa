@@ -1,6 +1,7 @@
 package boa
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"runtime"
@@ -39,37 +40,66 @@ func TestCobraCmdBuilder(t *testing.T) {
 	}
 	errWhitelist := cobra.FParseErrWhitelist{}
 	options := cobra.CompletionOptions{}
+	traverseChildren := true
+	hidden := true
+	silenceErrors := true
+	silenceUsage := true
+	disableFlagParsing := true
+	disableFlagsInUseLine := true
+	disableAutoGenTag := true
+	disableSuggestions := true
+	suggestionMinDist := 2
+	subCommands := []*cobra.Command{{Use: "a"}, {Use: "b"}}
+	usageTemplate := "usage"
+	helpTemplate := "help"
+	usageFunc := func(*cobra.Command) error { return errors.New("") }
+	helpFunc := func(*cobra.Command, []string) {}
 
 	mockCmd := &MockCobraCmd{
 		Command: &cobra.Command{
-			Aliases:                aliases,
-			SuggestFor:             suggestFor,
-			Short:                  short,
-			Long:                   long,
-			GroupID:                groupId,
-			Example:                example,
-			ValidArgs:              validArgs,
-			ValidArgsFunction:      validArgsFunc,
-			Args:                   args,
-			ArgAliases:             argAliases,
-			BashCompletionFunction: bashCompFunc,
-			Deprecated:             deprecationMsg,
-			Annotations:            annotations,
-			Version:                version,
-			PersistentPreRun:       runFunc,
-			PersistentPreRunE:      runEFunc,
-			PreRun:                 runFunc,
-			PreRunE:                runEFunc,
-			Run:                    runFunc,
-			RunE:                   runEFunc,
-			PostRun:                runFunc,
-			PostRunE:               runEFunc,
-			PersistentPostRun:      runFunc,
-			PersistentPostRunE:     runEFunc,
-			FParseErrWhitelist:     errWhitelist,
-			CompletionOptions:      options,
+			Aliases:                    aliases,
+			SuggestFor:                 suggestFor,
+			Short:                      short,
+			Long:                       long,
+			GroupID:                    groupId,
+			Example:                    example,
+			ValidArgs:                  validArgs,
+			ValidArgsFunction:          validArgsFunc,
+			Args:                       args,
+			ArgAliases:                 argAliases,
+			BashCompletionFunction:     bashCompFunc,
+			Deprecated:                 deprecationMsg,
+			Annotations:                annotations,
+			Version:                    version,
+			PersistentPreRun:           runFunc,
+			PersistentPreRunE:          runEFunc,
+			PreRun:                     runFunc,
+			PreRunE:                    runEFunc,
+			Run:                        runFunc,
+			RunE:                       runEFunc,
+			PostRun:                    runFunc,
+			PostRunE:                   runEFunc,
+			PersistentPostRun:          runFunc,
+			PersistentPostRunE:         runEFunc,
+			FParseErrWhitelist:         errWhitelist,
+			CompletionOptions:          options,
+			TraverseChildren:           traverseChildren,
+			Hidden:                     hidden,
+			SilenceErrors:              silenceErrors,
+			SilenceUsage:               silenceUsage,
+			DisableFlagParsing:         disableFlagParsing,
+			DisableFlagsInUseLine:      disableFlagsInUseLine,
+			DisableAutoGenTag:          disableAutoGenTag,
+			DisableSuggestions:         disableSuggestions,
+			SuggestionsMinimumDistance: suggestionMinDist,
 		},
 	}
+	mockCmd.AddCommand(subCommands...)
+	mockCmd.SetUsageTemplate(usageTemplate)
+	mockCmd.SetHelpTemplate(helpTemplate)
+	mockCmd.SetUsageFunc(usageFunc)
+	mockCmd.SetHelpFunc(helpFunc)
+
 	// Create a new cobra.Command using the builder
 	cmd := NewCobraCmd("test").
 		WithAliases(aliases).
@@ -98,6 +128,20 @@ func TestCobraCmdBuilder(t *testing.T) {
 		WithPersistentPostRunEFunc(runEFunc).
 		WithFParseErrWhitelist(errWhitelist).
 		WithCompletionOptions(options).
+		WithSuggestionsMinimumDistance(suggestionMinDist).
+		WithSubCommands(subCommands...).
+		WithUsageTemplate(usageTemplate).
+		WithHelpTemplate(helpTemplate).
+		WithUsageFunc(usageFunc).
+		WithHelpFunc(helpFunc).
+		TraverseChildren().
+		Hidden().
+		SilenceErrors().
+		SilenceUsage().
+		DisableFlagParsing().
+		DisableFlagsInUseLine().
+		DisableAutoGenTag().
+		DisableSuggestions().
 		Build()
 
 	//Field Equality
@@ -115,6 +159,14 @@ func TestCobraCmdBuilder(t *testing.T) {
 	assert.Equal(t, mockCmd.Version, cmd.Version)
 	assert.Equal(t, mockCmd.FParseErrWhitelist, cmd.FParseErrWhitelist)
 	assert.Equal(t, mockCmd.CompletionOptions, cmd.CompletionOptions)
+	assert.Equal(t, mockCmd.TraverseChildren, cmd.TraverseChildren)
+	assert.Equal(t, mockCmd.Hidden, cmd.Hidden)
+	assert.Equal(t, mockCmd.SilenceErrors, cmd.SilenceErrors)
+	assert.Equal(t, mockCmd.SilenceUsage, cmd.SilenceUsage)
+	assert.Equal(t, mockCmd.DisableFlagParsing, cmd.DisableFlagParsing)
+	assert.Equal(t, mockCmd.DisableFlagsInUseLine, cmd.DisableFlagsInUseLine)
+	assert.Equal(t, mockCmd.DisableAutoGenTag, cmd.DisableAutoGenTag)
+	assert.Equal(t, mockCmd.DisableSuggestions, cmd.DisableSuggestions)
 	// Function Equality
 	assert.Equal(t, getFuncName(mockCmd.ValidArgsFunction), getFuncName(cmd.ValidArgsFunction))
 	assert.Equal(t, getFuncName(mockCmd.Args), getFuncName(cmd.Args))
