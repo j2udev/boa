@@ -11,6 +11,7 @@ and maintain.
 If you initialize a new [cobra-cli](https://github.com/spf13/cobra-cli) project,
 you'll end up with something like this:
 
+<!-- markdownlint-disable MD010 -->
 ```go
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -48,10 +49,12 @@ func init() {
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 ```
+<!-- markdownlint-enable MD010 -->
 
 While this is small and manageable at first, things can quickly get messy.
 Conversely, this is (roughly) the same command using boa:
 
+<!-- markdownlint-disable MD010 -->
 ```go
 func NewRootCmd() *cobra.Command {
 	long := `A longer description that spans multiple lines and likely contains
@@ -70,9 +73,11 @@ to quickly create a Cobra application.`
 		Build()
 }
 ```
+<!-- markdownlint-enable MD010 -->
 
 where `NewChildCmd()` is defined in another file
 
+<!-- markdownlint-disable MD010 -->
 ```go
 func NewChildCmd() *cobra.Command {
 	return boa.NewCobraCmd("child").
@@ -88,9 +93,11 @@ func childFunc(cmd *cobra.Command, args []string) {
 	//business logic here; recommend abstracting it to a separate package that is cobra agnostic
 }
 ```
+<!-- markdownlint-enable MD010 -->
 
 and your main package is kept as minimal as possible
 
+<!-- markdownlint-disable MD010 -->
 ```go
 func main() {
 	err := cmd.NewRootCmd().Execute()
@@ -99,6 +106,7 @@ func main() {
 	}
 }
 ```
+<!-- markdownlint-enable MD010 -->
 
 Currently, Boa doesn't wrap Viper as extensively as it does Cobra. Viper is
 moving towards v2 and it doesn't lend itself to being wrapped in a builder as
@@ -109,31 +117,38 @@ To initialize a configuration that searches in the user's current working
 directory and their XDG_CONFIG_HOME in that respective order, you can use the
 `NewDefaultViperCfg()` function.
 
+<!-- markdownlint-disable MD010 -->
 ```go
-// define your configuration schema
+// define your configuration schema; viper uses [mapstructure](https://pkg.go.dev/github.com/mitchellh/mapstructure)
 // type Schema struct {
-//   ...
+// 	Cfg     SomeStruct            `mapstructure:"config"`
+// 	MoreCfg map[string]SomeStruct `mapstructure:"moreConfig"`
 // }
 // var cfg Schema
 viper := boa.NewDefaultViperCfg("boa").Build()
 err := viper.UnmarshalExact(&cfg)
 ```
+<!-- markdownlint-enable MD010 -->
 
 If the defaults don't work for you, you can always build your own!
 
+<!-- markdownlint-disable MD010 -->
 ```go
-viper := boa.NewViperCfg().
-  WithConfigPaths("/potential/path/to/config", "/another/one").
-  WithConfigName("my-cool-config").
-  Read().
-  Build()
+	viper := boa.NewViperCfg().
+		WithConfigPaths("/potential/path/to/config", "/another/one").
+		WithConfigName("my-cool-config").
+		Read().
+		Build()
 ```
+<!-- markdownlint-enable MD010 -->
 
 or
 
+<!-- markdownlint-disable MD010 -->
 ```go
-viper := boa.NewViperCfg().
-  WithConfigFiles("/potential/path/to/config.yml", "/another/one/config.json").
-  Read().
-  Build()
+	viper := boa.NewViperCfg().
+		WithConfigFiles("/potential/path/to/config.yml", "/another/one/config.json").
+		Read().
+		Build()
 ```
+<!-- markdownlint-enable MD010 -->

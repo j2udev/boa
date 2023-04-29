@@ -15,6 +15,12 @@ type CobraCmdBuilder struct {
 	cmd *cobra.Command
 }
 
+// ToCobraCmdBuilder is used to convert an existing cobra Command to a
+// CobraCmdBuilder.
+func ToCobraCmdBuilder(cmd *cobra.Command) *CobraCmdBuilder {
+	return &CobraCmdBuilder{cmd}
+}
+
 // NewCobraCmd creates a new CobraCmdBuilder and sets the use for the
 // underlying cobra Command
 //
@@ -139,6 +145,10 @@ func (b *CobraCmdBuilder) WithAnnotations(annotations map[string]string) *CobraC
 func (b *CobraCmdBuilder) WithVersion(version string) *CobraCmdBuilder {
 	b.cmd.Version = version
 	return b
+}
+
+func (b *CobraCmdBuilder) WithNoOp() *CobraCmdBuilder {
+	return b.WithRunFunc(func(*cobra.Command, []string) {})
 }
 
 // The *Run functions are executed in the following order:
@@ -2598,6 +2608,25 @@ func (b *CobraCmdBuilder) WithFlagSet(flagset *pflag.FlagSet) *CobraCmdBuilder {
 func (b *CobraCmdBuilder) WithPersistentFlagSet(flagset *pflag.FlagSet) *CobraCmdBuilder {
 	b.cmd.PersistentFlags().AddFlagSet(flagset)
 	return b
+}
+
+// ToBoaCmdBuilder returns a BoaCmdBuilder from a CobraCmdBuilder
+func (b *CobraCmdBuilder) ToBoaCmdBuilder() *BoaCmdBuilder {
+	return &BoaCmdBuilder{
+		b,
+		&Command{
+			b.cmd,
+			[]Option{},
+		},
+	}
+}
+
+// BuildBoaCmd returns a boa Command from a CobraCmdBuilder
+func (b *CobraCmdBuilder) BuildBoaCmd() *Command {
+	return &Command{
+		b.cmd,
+		[]Option{},
+	}
 }
 
 // Build returns a cobra Command from a CobraCmdBuilder
