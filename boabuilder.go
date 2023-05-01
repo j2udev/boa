@@ -12,7 +12,7 @@ type BoaCmdBuilder struct {
 	cmd *Command
 }
 
-// ToBoaCmdBuilder is used to convert a cobra Command to a BoaCmdBuilder.
+// ToBoaCmdBuilder is used to convert a cobra.Command to a BoaCmdBuilder.
 func ToBoaCmdBuilder(cmd *cobra.Command) *BoaCmdBuilder {
 	return &BoaCmdBuilder{
 		&CobraCmdBuilder{cmd},
@@ -39,6 +39,12 @@ func (b *BoaCmdBuilder) WithOptions(opts ...Option) *BoaCmdBuilder {
 	return b
 }
 
+// WithOptionsAndTemplate is used to add any number of options to the boa
+// Command and applies the WithOptionsTemplate() method as well.
+func (b *BoaCmdBuilder) WithOptionsAndTemplate(opts ...Option) *BoaCmdBuilder {
+	return b.WithOptions(opts...).WithOptionsTemplate()
+}
+
 // WithUsageTemplate is used to add a custom template for usage text
 func (b *BoaCmdBuilder) WithUsageTemplate(template string) *BoaCmdBuilder {
 	cmd := b.Build()
@@ -55,13 +61,11 @@ func (b *BoaCmdBuilder) WithHelpTemplate(template string) *BoaCmdBuilder {
 
 // WithOptionsTemplate is used to add options to the usage and help text
 func (b *BoaCmdBuilder) WithOptionsTemplate() *BoaCmdBuilder {
-	cmd := b.Build()
-	b.WithUsageTemplate(cmd.OptionsTemplate())
-	b.WithHelpTemplate(cmd.OptionsTemplate())
-	return b
+	template := b.Build().OptionsTemplate()
+	return b.WithUsageTemplate(template).WithHelpTemplate(template)
 }
 
-// WithValidArgsFromOptions updates the underlying cobra Command's ValidArgs
+// WithValidArgsFromOptions updates the underlying cobra.Command's ValidArgs
 // with all arguments from the boa Commands options
 //
 // Should be used in conjunction with a CobraCmdBuilder
@@ -84,7 +88,7 @@ func (b *BoaCmdBuilder) ToCobraCmdBuilder() *CobraCmdBuilder {
 	return b.CobraCmdBuilder
 }
 
-// BuildCobraCmd returns a cobra Command from a BoaCmdBuilder
+// BuildCobraCmd returns a cobra.Command from a BoaCmdBuilder
 //
 // This method allows bypassing the ToCobraCmdBuilder() step before Build()
 func (b *BoaCmdBuilder) BuildCobraCmd() *cobra.Command {

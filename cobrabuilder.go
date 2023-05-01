@@ -8,21 +8,21 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// CobraCmdBuilder is a builder for cobra Command fields and chaining other
+// CobraCmdBuilder is a builder for cobra.Command fields and chaining other
 // helpful methods. Flags can be added to a command using builder methods as
 // well.
 type CobraCmdBuilder struct {
 	cmd *cobra.Command
 }
 
-// ToCobraCmdBuilder is used to convert an existing cobra Command to a
+// ToCobraCmdBuilder is used to convert an existing cobra.Command to a
 // CobraCmdBuilder.
 func ToCobraCmdBuilder(cmd *cobra.Command) *CobraCmdBuilder {
 	return &CobraCmdBuilder{cmd}
 }
 
 // NewCobraCmd creates a new CobraCmdBuilder and sets the use for the
-// underlying cobra Command
+// underlying cobra.Command
 //
 // Use is the one-line usage message.
 // Recommended syntax is as follows:
@@ -2629,7 +2629,7 @@ func (b *CobraCmdBuilder) BuildBoaCmd() *Command {
 	}
 }
 
-// Build returns a cobra Command from a CobraCmdBuilder
+// Build returns a cobra.Command from a CobraCmdBuilder
 func (b *CobraCmdBuilder) Build() *cobra.Command {
 	return b.cmd
 }
