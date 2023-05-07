@@ -8,6 +8,11 @@ Boa is a wrapper for the popular [Cobra](https://github.com/spf13/cobra) and
 of Cobra Commands and Viper configuration, making them easier to create, read
 and maintain.
 
+## Disclaimer
+
+This project should be considered unstable until it is officially released. Use
+at your own risk.
+
 ## CobraCmdBuilder
 
 Boa wraps the construction of Cobra commands in a builder as opposed to the
