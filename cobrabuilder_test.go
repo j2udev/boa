@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -18,6 +19,8 @@ type MockCobraCmd struct {
 }
 
 func TestCobraCmdBuilder(t *testing.T) {
+	// common values to use for struct literal cobra.Command vs CobraCmdBuilder
+	// cobra.Command
 	aliases := []string{"alias1", "alias2"}
 	suggestFor := []string{"cmd1", "cmd2"}
 	short := "short desc"
@@ -55,6 +58,46 @@ func TestCobraCmdBuilder(t *testing.T) {
 	usageFunc := func(*cobra.Command) error { return errors.New("") }
 	helpFunc := func(*cobra.Command, []string) {}
 
+	// common values to use for mock cobra.Command flagset vs CobraCmdBuilder flagset
+	boolName := "boolFlag"
+	boolVarName := "boolVarFlag"
+	boolPName := "boolPFlag"
+	boolVarPName := "boolVarPFlag"
+	boolVar := false
+	boolShorthand := "a"
+	boolVarShorthand := "A"
+	boolDefault := false
+	boolUsage := "bool usage"
+	boolSliceName := "boolSliceFlag"
+	boolSliceVarName := "boolSliceVarFlag"
+	boolSlicePName := "boolSlicePFlag"
+	boolSliceVarPName := "boolSliceVarPFlag"
+	boolSliceVar := []bool{}
+	boolSliceShorthand := "b"
+	boolSliceVarShorthand := "B"
+	boolSliceDefault := []bool{false}
+	boolSliceUsage := "bool slice usage"
+	stringName := "stringFlag"
+	stringVarName := "stringVarFlag"
+	stringPName := "stringPFlag"
+	stringVarPName := "stringVarPFlag"
+	stringSliceName := "stringSliceFlag"
+	stringSliceVarName := "stringSliceVarFlag"
+	stringSlicePName := "stringSlicePFlag"
+	stringSliceVarPName := "stringSliceVarPFlag"
+	stringVar := "t"
+	stringShorthand := "c"
+	stringVarShorthand := "C"
+	stringDefault := "test"
+	stringUsage := "string usage"
+	stringSliceVar := []string{"t"}
+	stringSliceShorthand := "d"
+	stringSliceVarShorthand := "D"
+	stringSliceDefault := []string{"test"}
+	stringSliceUsage := "string slice usage"
+
+	// define mock cobra.Command using struct literal to compare to the resulting
+	// cobra.Command from the CobraCmdBuilder
 	mockCmd := &MockCobraCmd{
 		Command: &cobra.Command{
 			Aliases:                    aliases,
@@ -94,11 +137,33 @@ func TestCobraCmdBuilder(t *testing.T) {
 			SuggestionsMinimumDistance: suggestionMinDist,
 		},
 	}
+	// cover the additional cobra.Command methods that the CobraCmdBuilder wraps
 	mockCmd.AddCommand(subCommands...)
 	mockCmd.SetUsageTemplate(usageTemplate)
 	mockCmd.SetHelpTemplate(helpTemplate)
 	mockCmd.SetUsageFunc(usageFunc)
 	mockCmd.SetHelpFunc(helpFunc)
+
+	// define a mock pflag.Flagset to compare to the cobra.Command.Flags() flagset
+	// that results from using the builder methods
+	mockFs := pflag.NewFlagSet("mockfs", pflag.ContinueOnError)
+	mockFs.Bool(boolName, boolDefault, boolUsage)
+	mockFs.BoolVar(&boolVar, boolVarName, boolDefault, boolUsage)
+	mockFs.BoolP(boolPName, boolShorthand, boolDefault, boolUsage)
+	mockFs.BoolVarP(&boolVar, boolVarPName, boolVarShorthand, boolDefault, boolUsage)
+	mockFs.BoolSlice(boolSliceName, boolSliceDefault, boolSliceUsage)
+	mockFs.BoolSliceVar(&boolSliceVar, boolSliceVarName, boolSliceDefault, boolSliceUsage)
+	mockFs.BoolSliceP(boolSlicePName, boolSliceShorthand, boolSliceDefault, boolSliceUsage)
+	mockFs.BoolSliceVarP(&boolSliceVar, boolSliceVarPName, boolSliceVarShorthand, boolSliceDefault, boolSliceUsage)
+	mockFs.String(stringName, stringDefault, stringUsage)
+	mockFs.StringVar(&stringVar, stringVarName, stringDefault, stringUsage)
+	mockFs.StringP(stringPName, stringShorthand, stringDefault, stringUsage)
+	mockFs.StringVarP(&stringVar, stringVarPName, stringVarShorthand, stringDefault, stringUsage)
+	mockFs.StringSlice(stringSliceName, stringSliceDefault, stringSliceUsage)
+	mockFs.StringSliceVar(&stringSliceVar, stringSliceVarName, stringSliceDefault, stringSliceUsage)
+	mockFs.StringSliceP(stringSlicePName, stringSliceShorthand, stringSliceDefault, stringSliceUsage)
+	mockFs.StringSliceVarP(&stringSliceVar, stringSliceVarPName, stringSliceVarShorthand, stringSliceDefault, stringSliceUsage)
+	mockCmd.Flags().AddFlagSet(mockFs)
 
 	// Create a new cobra.Command using the builder
 	cmd := NewCobraCmd("test").
@@ -142,6 +207,22 @@ func TestCobraCmdBuilder(t *testing.T) {
 		DisableFlagsInUseLine().
 		DisableAutoGenTag().
 		DisableSuggestions().
+		WithBoolFlag(boolName, boolDefault, boolUsage).
+		WithBoolVarFlag(&boolVar, boolVarName, boolDefault, boolUsage).
+		WithBoolPFlag(boolPName, boolShorthand, boolDefault, boolUsage).
+		WithBoolVarPFlag(&boolVar, boolVarPName, boolVarShorthand, boolDefault, boolUsage).
+		WithBoolSliceFlag(boolSliceName, boolSliceDefault, boolSliceUsage).
+		WithBoolSliceVarFlag(&boolSliceVar, boolSliceVarName, boolSliceDefault, boolSliceUsage).
+		WithBoolSlicePFlag(boolSlicePName, boolSliceShorthand, boolSliceDefault, boolSliceUsage).
+		WithBoolSliceVarPFlag(&boolSliceVar, boolSliceVarPName, boolSliceVarShorthand, boolSliceDefault, boolSliceUsage).
+		WithStringFlag(stringName, stringDefault, stringUsage).
+		WithStringVarFlag(&stringVar, stringVarName, stringDefault, stringUsage).
+		WithStringPFlag(stringPName, stringShorthand, stringDefault, stringUsage).
+		WithStringVarPFlag(&stringVar, stringVarPName, stringVarShorthand, stringDefault, stringUsage).
+		WithStringSliceFlag(stringSliceName, stringSliceDefault, stringSliceUsage).
+		WithStringSliceVarFlag(&stringSliceVar, stringSliceVarName, stringSliceDefault, stringSliceUsage).
+		WithStringSlicePFlag(stringSlicePName, stringSliceShorthand, stringSliceDefault, stringSliceUsage).
+		WithStringSliceVarPFlag(&stringSliceVar, stringSliceVarPName, stringSliceVarShorthand, stringSliceDefault, stringSliceUsage).
 		Build()
 
 	//Field Equality
@@ -180,6 +261,59 @@ func TestCobraCmdBuilder(t *testing.T) {
 	assert.Equal(t, getFuncName(mockCmd.PostRunE), getFuncName(cmd.PostRunE))
 	assert.Equal(t, getFuncName(mockCmd.PersistentPostRun), getFuncName(cmd.PersistentPostRun))
 	assert.Equal(t, getFuncName(mockCmd.PersistentPostRunE), getFuncName(cmd.PersistentPostRunE))
+	// Flag Equality
+	// bool flags
+	mockBoolFlag, _ := mockCmd.Flags().GetBool(boolName)
+	cmdBoolFlag, _ := cmd.Flags().GetBool(boolName)
+	assert.Equal(t, mockBoolFlag, cmdBoolFlag)
+	mockBoolFlag, _ = mockCmd.Flags().GetBool(boolVarName)
+	cmdBoolFlag, _ = cmd.Flags().GetBool(boolVarName)
+	assert.Equal(t, mockBoolFlag, cmdBoolFlag)
+	mockBoolFlag, _ = mockCmd.Flags().GetBool(boolPName)
+	cmdBoolFlag, _ = cmd.Flags().GetBool(boolPName)
+	assert.Equal(t, mockBoolFlag, cmdBoolFlag)
+	mockBoolFlag, _ = mockCmd.Flags().GetBool(boolVarPName)
+	cmdBoolFlag, _ = cmd.Flags().GetBool(boolVarPName)
+	assert.Equal(t, mockBoolFlag, cmdBoolFlag)
+	// bool slice flags
+	mockBoolSliceFlag, _ := mockCmd.Flags().GetBoolSlice(boolSliceName)
+	cmdBoolSliceFlag, _ := cmd.Flags().GetBoolSlice(boolSliceName)
+	assert.Equal(t, mockBoolSliceFlag, cmdBoolSliceFlag)
+	mockBoolSliceFlag, _ = mockCmd.Flags().GetBoolSlice(boolSliceVarName)
+	cmdBoolSliceFlag, _ = cmd.Flags().GetBoolSlice(boolSliceVarName)
+	assert.Equal(t, mockBoolSliceFlag, cmdBoolSliceFlag)
+	mockBoolSliceFlag, _ = mockCmd.Flags().GetBoolSlice(boolSlicePName)
+	cmdBoolSliceFlag, _ = cmd.Flags().GetBoolSlice(boolSlicePName)
+	assert.Equal(t, mockBoolSliceFlag, cmdBoolSliceFlag)
+	mockBoolSliceFlag, _ = mockCmd.Flags().GetBoolSlice(boolSliceVarPName)
+	cmdBoolSliceFlag, _ = cmd.Flags().GetBoolSlice(boolSliceVarPName)
+	assert.Equal(t, mockBoolSliceFlag, cmdBoolSliceFlag)
+	// string flags
+	mockStringFlag, _ := mockCmd.Flags().GetString(stringName)
+	cmdStringFlag, _ := cmd.Flags().GetString(stringName)
+	assert.Equal(t, mockStringFlag, cmdStringFlag)
+	mockStringFlag, _ = mockCmd.Flags().GetString(stringVarName)
+	cmdStringFlag, _ = cmd.Flags().GetString(stringVarName)
+	assert.Equal(t, mockStringFlag, cmdStringFlag)
+	mockStringFlag, _ = mockCmd.Flags().GetString(stringPName)
+	cmdStringFlag, _ = cmd.Flags().GetString(stringPName)
+	assert.Equal(t, mockStringFlag, cmdStringFlag)
+	mockStringFlag, _ = mockCmd.Flags().GetString(stringVarPName)
+	cmdStringFlag, _ = cmd.Flags().GetString(stringVarPName)
+	assert.Equal(t, mockStringFlag, cmdStringFlag)
+	// string slice flags
+	mockStringSliceFlag, _ := mockCmd.Flags().GetStringSlice(stringSliceName)
+	cmdStringSliceFlag, _ := cmd.Flags().GetStringSlice(stringSliceName)
+	assert.Equal(t, mockStringSliceFlag, cmdStringSliceFlag)
+	mockStringSliceFlag, _ = mockCmd.Flags().GetStringSlice(stringSliceVarName)
+	cmdStringSliceFlag, _ = cmd.Flags().GetStringSlice(stringSliceVarName)
+	assert.Equal(t, mockStringSliceFlag, cmdStringSliceFlag)
+	mockStringSliceFlag, _ = mockCmd.Flags().GetStringSlice(stringSlicePName)
+	cmdStringSliceFlag, _ = cmd.Flags().GetStringSlice(stringSlicePName)
+	assert.Equal(t, mockStringSliceFlag, cmdStringSliceFlag)
+	mockStringSliceFlag, _ = mockCmd.Flags().GetStringSlice(stringSliceVarPName)
+	cmdStringSliceFlag, _ = cmd.Flags().GetStringSlice(stringSliceVarPName)
+	assert.Equal(t, mockStringSliceFlag, cmdStringSliceFlag)
 }
 
 func getFuncName(function any) string {
