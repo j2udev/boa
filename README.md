@@ -1,6 +1,6 @@
 # Boa
 
-[![Go](https://github.com/j2udev/boa/actions/workflows/go.yml/badge.svg)](https://github.com/j2udev/boa/actions/workflows/go.yml)
+[![Build Status](https://github.com/j2udev/boa/workflows/build/badge.svg?branch=main)](https://github.com/j2udev/boa/actions?query=workflow%3Abuild+branch%3Amain)
 [![GoReportCard](https://goreportcard.com/badge/github.com/j2udev/boa)](https://goreportcard.com/report/github.com/j2udev/boa)
 [![Go Reference](https://pkg.go.dev/badge/github.com/j2udev/boa.svg)](https://pkg.go.dev/github.com/j2udev/boa)
 
@@ -133,7 +133,7 @@ positional args are unknown and therefore aren't listed in the help/usage text,
 you likely have no need for a boa.Command. A good example of a CLI like this is
 [kubectl](https://kubernetes.io/docs/reference/kubectl/).
 
-```txt
+```text
 kubectl logs -f <what pod name?>
 kubectl apply -f <what manifest?>
 kubectl describe deployment <what deployment?>
@@ -146,7 +146,7 @@ perfectly fine.
 Let's imagine for a second that you're building a CLI that _does_ have static
 positional args. For example:
 
-```txt
+```text
 mycoolcli install kubectl helm skaffold
 |         |       |       |    |
 |         |       |-------|----| static positional args
@@ -245,7 +245,7 @@ func NewInstallCmd() *boa.Command {
 Let's see the help text of `mycoolcli install` now that boa.Command vs
 cobra.Command and BoaCmdBuilder vs CobraCmdBuilder have been addressed.
 
-```txt
+```text
 Usage:
   mycoolcli install [flags] [options]
 
