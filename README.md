@@ -1,6 +1,6 @@
 # Boa
 
-![Build Status](https://github.com/j2udev/boa/workflows/go.yml/badge.svg)
+[![Go](https://github.com/j2udev/boa/actions/workflows/go.yml/badge.svg)](https://github.com/j2udev/boa/actions/workflows/go.yml)
 [![GoReportCard](https://goreportcard.com/badge/github.com/j2udev/boa)](https://goreportcard.com/report/github.com/j2udev/boa)
 [![Go Reference](https://pkg.go.dev/badge/github.com/j2udev/boa.svg)](https://pkg.go.dev/github.com/j2udev/boa)
 
