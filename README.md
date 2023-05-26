@@ -1,5 +1,6 @@
 # Boa
 
+[![Build Status](https://github.com/j2udev/boa/workflows/build/badge.svg?branch=main)](https://github.com/j2udev/boa/actions?query=workflow%3Abuild+branch%3Amain)
 [![GoReportCard](https://goreportcard.com/badge/github.com/j2udev/boa)](https://goreportcard.com/report/github.com/j2udev/boa)
 [![Go Reference](https://pkg.go.dev/badge/github.com/j2udev/boa.svg)](https://pkg.go.dev/github.com/j2udev/boa)
 
@@ -125,7 +126,7 @@ func main() {
 
 <!-- markdownlint-enable MD010 -->
 
-## boa.Command & BoaCmdBuilder
+## BoaCmdBuilder
 
 If you are perfectly content with the traditional Cobra CLI in which the
 positional args are unknown and therefore aren't listed in the help/usage text,
