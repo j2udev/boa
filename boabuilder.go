@@ -16,7 +16,7 @@ type BoaCmdBuilder struct {
 func ToBoaCmdBuilder(cmd *cobra.Command) *BoaCmdBuilder {
 	return &BoaCmdBuilder{
 		&CobraCmdBuilder{cmd},
-		&Command{cmd, []Option{}},
+		&Command{cmd, []Option{}, []Profile{}},
 	}
 }
 
@@ -36,6 +36,12 @@ func NewCmd(use string) *BoaCmdBuilder {
 // WithOptions is used to add any number of options to the boa Command
 func (b *BoaCmdBuilder) WithOptions(opts ...Option) *BoaCmdBuilder {
 	b.cmd.Opts = append(b.cmd.Opts, opts...)
+	return b
+}
+
+// WithProfiles is used to add any number of options to the boa Command
+func (b *BoaCmdBuilder) WithProfiles(profs ...Profile) *BoaCmdBuilder {
+	b.cmd.Profiles = append(b.cmd.Profiles, profs...)
 	return b
 }
 

@@ -15,11 +15,19 @@ type (
 		Args []string
 		Desc string
 	}
+
+	// Profile is used to bundle multiple options as a single option
+	Profile struct {
+		Args []string
+		Opts []string
+		Desc string
+	}
 	// Command is a wrapper for the cobra Command that adds additional fields to
 	// support better usage, help, etc.
 	Command struct {
 		*cobra.Command
-		Opts []Option
+		Opts     []Option
+		Profiles []Profile
 	}
 )
 
@@ -79,7 +87,11 @@ Additional Commands:{{range $cmds}}{{if (and (eq .GroupID "") (or .IsAvailableCo
   {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{end}}{{end}}{{if .HasOptions}}
 
 Options:{{range .Opts }}
-  {{.Args | sliceToCsv}}	{{.Desc}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}
+  {{.Args | sliceToCsv}}	{{.Desc}}{{end}}{{end}}{{if .HasProfiles}}
+
+Profiles:{{range .Profiles }}
+  {{.Args | sliceToCsv}}	{{.Desc}}
+    ↳ Options:	{{.Opts | sliceToCsv}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}
 
 Flags:
 {{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasAvailableInheritedFlags}}
@@ -98,6 +110,15 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{e
 // primary used for templating purposes.
 func (c Command) HasOptions() bool {
 	if c.Opts == nil || len(c.Opts) == 0 {
+		return false
+	}
+	return true
+}
+
+// HasProfiles returns whether the boa Command has any profiles defined; this is
+// primary used for templating purposes.
+func (c Command) HasProfiles() bool {
+	if c.Profiles == nil || len(c.Profiles) == 0 {
 		return false
 	}
 	return true

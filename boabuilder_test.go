@@ -20,6 +20,22 @@ Options:
 Flags:
   -h, --help   help for test
 `
+	expectedProfilesOutput := `Usage:
+  test [flags] [options]
+
+Options:
+  option1, opt1   opt1 description
+  option2         opt2 description
+
+Profiles:
+  profile1, prof1   prof1 description
+    ↳ Options:      opt1, option2
+  profile2          prof2 description
+    ↳ Options:      option1
+
+Flags:
+  -h, --help   help for test
+`
 
 	options := []Option{
 		{
@@ -29,6 +45,18 @@ Flags:
 		{
 			Args: []string{"option2"},
 			Desc: "opt2 description",
+		},
+	}
+	profiles := []Profile{
+		{
+			Args: []string{"profile1, prof1"},
+			Opts: []string{"opt1", "option2"},
+			Desc: "prof1 description",
+		},
+		{
+			Args: []string{"profile2"},
+			Opts: []string{"option1"},
+			Desc: "prof2 description",
 		},
 	}
 
@@ -41,9 +69,16 @@ Flags:
 		WithOptionsAndTemplate(options...).
 		WithNoOp().
 		Build()
+	cmd3 := NewCmd("test").
+		WithOptions(options...).
+		WithProfiles(profiles...).
+		WithOptionsTemplate().
+		WithNoOp().
+		Build()
 
 	assert.Equal(t, expectedOptionsOutput, captureCmdOutput(cmd1, "-h"))
 	assert.Equal(t, expectedOptionsOutput, captureCmdOutput(cmd2, "-h"))
+	assert.Equal(t, expectedProfilesOutput, captureCmdOutput(cmd3, "-h"))
 }
 
 func captureCmdOutput(cmd *cobra.Command, args ...string) string {

@@ -2617,6 +2617,7 @@ func (b *CobraCmdBuilder) ToBoaCmdBuilder() *BoaCmdBuilder {
 		&Command{
 			b.cmd,
 			[]Option{},
+			[]Profile{},
 		},
 	}
 }
@@ -2626,6 +2627,7 @@ func (b *CobraCmdBuilder) BuildBoaCmd() *Command {
 	return &Command{
 		b.cmd,
 		[]Option{},
+		[]Profile{},
 	}
 }
 
