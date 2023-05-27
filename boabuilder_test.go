@@ -66,7 +66,6 @@ Flags:
 		WithNoOp().
 		Build()
 	cmd2 := NewCmd("test").
-		WithOptionsAndTemplate(options...).
 		WithNoOp().
 		Build()
 	cmd3 := NewCmd("test").

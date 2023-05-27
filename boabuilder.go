@@ -45,29 +45,21 @@ func (b *BoaCmdBuilder) WithProfiles(profs ...Profile) *BoaCmdBuilder {
 	return b
 }
 
-// WithOptionsAndTemplate is used to add any number of options to the boa
-// Command and applies the WithOptionsTemplate() method as well.
-func (b *BoaCmdBuilder) WithOptionsAndTemplate(opts ...Option) *BoaCmdBuilder {
-	return b.WithOptions(opts...).WithOptionsTemplate()
-}
-
 // WithUsageTemplate is used to add a custom template for usage text
 func (b *BoaCmdBuilder) WithUsageTemplate(template string) *BoaCmdBuilder {
-	cmd := b.Build()
-	b.WithUsageFunc(cmd.UsageFunc(template))
+	b.WithUsageFunc(b.cmd.UsageFunc(template))
 	return b
 }
 
 // WithHelpTemplate is used to add a custom template for help text
 func (b *BoaCmdBuilder) WithHelpTemplate(template string) *BoaCmdBuilder {
-	cmd := b.Build()
-	b.WithHelpFunc(cmd.HelpFunc(template))
+	b.WithHelpFunc(b.cmd.HelpFunc(template))
 	return b
 }
 
 // WithOptionsTemplate is used to add options to the usage and help text
 func (b *BoaCmdBuilder) WithOptionsTemplate() *BoaCmdBuilder {
-	template := b.Build().OptionsTemplate()
+	template := b.cmd.OptionsTemplate()
 	return b.WithUsageTemplate(template).WithHelpTemplate(template)
 }
 
@@ -80,6 +72,9 @@ func (b *BoaCmdBuilder) WithOptionsTemplate() *BoaCmdBuilder {
 func (b *BoaCmdBuilder) WithValidArgsFromOptions() *BoaCmdBuilder {
 	for _, opt := range b.cmd.Opts {
 		b.cmd.ValidArgs = append(b.cmd.ValidArgs, opt.Args...)
+	}
+	for _, prof := range b.cmd.Profiles {
+		b.cmd.ValidArgs = append(b.cmd.ValidArgs, prof.Args...)
 	}
 	return b
 }
