@@ -86,7 +86,7 @@ func (b *CobraCmdBuilder) WithExample(example string) *CobraCmdBuilder {
 // WithValidArgs is list of all valid non-flag arguments that are accepted in
 // shell completions
 func (b *CobraCmdBuilder) WithValidArgs(validArgs []string) *CobraCmdBuilder {
-	b.cmd.ValidArgs = validArgs
+	b.cmd.ValidArgs = append(b.cmd.ValidArgs, validArgs...)
 	return b
 }
 

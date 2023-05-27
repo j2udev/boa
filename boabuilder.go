@@ -39,9 +39,29 @@ func (b *BoaCmdBuilder) WithOptions(opts ...Option) *BoaCmdBuilder {
 	return b
 }
 
+// WithValidOptions is used to add any number of options to the boa Command and
+// set them as ValidArgs
+func (b *BoaCmdBuilder) WithValidOptions(opts ...Option) *BoaCmdBuilder {
+	b.cmd.Opts = append(b.cmd.Opts, opts...)
+	for _, opt := range b.cmd.Opts {
+		b.cmd.ValidArgs = append(b.cmd.ValidArgs, opt.Args...)
+	}
+	return b
+}
+
 // WithProfiles is used to add any number of options to the boa Command
 func (b *BoaCmdBuilder) WithProfiles(profs ...Profile) *BoaCmdBuilder {
 	b.cmd.Profiles = append(b.cmd.Profiles, profs...)
+	return b
+}
+
+// WithValidProfiles is used to add any number of options to the boa Command and
+// set them as ValidArgs
+func (b *BoaCmdBuilder) WithValidProfiles(profs ...Profile) *BoaCmdBuilder {
+	b.cmd.Profiles = append(b.cmd.Profiles, profs...)
+	for _, prof := range b.cmd.Profiles {
+		b.cmd.ValidArgs = append(b.cmd.ValidArgs, prof.Args...)
+	}
 	return b
 }
 
@@ -63,19 +83,17 @@ func (b *BoaCmdBuilder) WithOptionsTemplate() *BoaCmdBuilder {
 	return b.WithUsageTemplate(template).WithHelpTemplate(template)
 }
 
-// WithValidArgsFromOptions updates the underlying cobra.Command's ValidArgs
-// with all arguments from the boa Commands options
-//
-// Should be used in conjunction with a CobraCmdBuilder
-//
-//	WithArgs(cobra.OnlyValidArgs)
-func (b *BoaCmdBuilder) WithValidArgsFromOptions() *BoaCmdBuilder {
-	for _, opt := range b.cmd.Opts {
-		b.cmd.ValidArgs = append(b.cmd.ValidArgs, opt.Args...)
-	}
-	for _, prof := range b.cmd.Profiles {
-		b.cmd.ValidArgs = append(b.cmd.ValidArgs, prof.Args...)
-	}
+// WithMinValidArgs will cause the command to throw an error if at least minArgs
+// valid arguments are not provided
+func (b *BoaCmdBuilder) WithMinValidArgs(minArgs int) *BoaCmdBuilder {
+	b.cmd.Args = cobra.MatchAll(cobra.MinimumNArgs(minArgs), cobra.OnlyValidArgs)
+	return b
+}
+
+// WithMaxValidArgs will cause the command to throw an error if more than
+// maxArgs valid arguments are provided
+func (b *BoaCmdBuilder) WithMaxValidArgs(maxArgs int) *BoaCmdBuilder {
+	b.cmd.Args = cobra.MatchAll(cobra.MaximumNArgs(maxArgs), cobra.OnlyValidArgs)
 	return b
 }
 
