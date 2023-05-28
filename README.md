@@ -177,12 +177,13 @@ For example, this is valid:
 ```go
 func NewInstallCmd() *cobra.Command {
 	return boa.NewCmd("install").
-		WithOptionsAndTemplate(
+		WithValidOptions(
 			boa.Option{Args: []string{"kubectl"}, Desc: "install kubectl"},
 			boa.Option{Args: []string{"helm"}, Desc: "install helm"},
 			boa.Option{Args: []string{"skaffold"}, Desc: "install skaffold"},
 		).
-		WithValidArgsFromOptions().
+		WithOptionsTemplate().
+		WithMinValidArgs(1).
 		WithShortDescription("install tools").
 		WithLongDescription("install tools that make a productive kubernetes developer").
 		WithRunFunc(install).
@@ -202,22 +203,23 @@ func NewInstallCmd() *boa.Command {
 		WithShortDescription("install tools").
 		WithLongDescription("install tools that make a productive kubernetes developer").
 		WithRunFunc(install).
-		WithOptionsAndTemplate(
+		WithValidOptions(
 			boa.Option{Args: []string{"kubectl"}, Desc: "install kubectl"},
 			boa.Option{Args: []string{"helm"}, Desc: "install helm"},
 			boa.Option{Args: []string{"skaffold"}, Desc: "install skaffold"},
 		).
-		WithValidArgsFromOptions().
+		WithOptionsTemplate().
+		WithMinValidArgs(1).
 		Build()
 }
 ```
 
 <!-- markdownlint-enable MD010 -->
 
-`WithOptionsAndTemplate()` and `WithValidArgsFromOptions()` are methods on the
-BoaCmdBuilder which embeds the CobraCmdBuilder and therefore has access to all
-of its methods. This is why the BoaCmdBuilder methods can chain into
-CobraCmdBuilder methods, but the reverse is not true unless you use the
+`WithValidOptions()`, `WithOptionsTemplate()`, and `WithMinValidArgs()` are
+methods on the BoaCmdBuilder which embeds the CobraCmdBuilder and therefore has
+access to all of its methods. This is why the BoaCmdBuilder methods can chain
+into CobraCmdBuilder methods, but the reverse is not true unless you use the
 `ToBoaCmdBuilder()` method on the CobraCmdBuilder. If we look at the previously
 invalid example, we can make it valid by chaining `ToBoaCmdBuilder()`.
 
@@ -230,12 +232,13 @@ func NewInstallCmd() *boa.Command {
 		WithLongDescription("install tools that make a productive kubernetes developer").
 		WithRunFunc(install).
 		ToBoaCmdBuilder().
-		WithOptionsAndTemplate(
+		WithValidOptions(
 			boa.Option{Args: []string{"kubectl"}, Desc: "install kubectl"},
 			boa.Option{Args: []string{"helm"}, Desc: "install helm"},
 			boa.Option{Args: []string{"skaffold"}, Desc: "install skaffold"},
 		).
-		WithValidArgsFromOptions().
+		WithOptionsTemplate().
+		WithMinValidArgs(1).
 		Build()
 }
 ```
@@ -257,6 +260,59 @@ Options:
 Flags:
   -h, --help   help for install
 ```
+
+boa.Commands also support profiles, which simply means that you can define an
+argument as a shorthand for a set of other options. In practice this looks
+something like:
+
+<!-- markdownlint-disable MD010 -->
+
+```go
+func NewInstallCmd() *cobra.Command {
+	return boa.NewCmd("install").
+		WithValidOptions(
+			boa.Option{Args: []string{"kubectl"}, Desc: "install kubectl"},
+			boa.Option{Args: []string{"helm"}, Desc: "install helm"},
+			boa.Option{Args: []string{"skaffold"}, Desc: "install skaffold"},
+		).
+		WithValidProfiles(
+			boa.Profile{Args: []string{"core"}, Opts: []string{"kubectl", "helm"}, Desc: "install core tools for working with k8s"},
+			boa.Profile{Args: []string{"developer", "dev"}, Opts: []string{"kubectl", "helm", "skaffold"}, Desc: "install k8s developer tools"},
+		).
+		WithOptionsTemplate().
+		WithMinValidArgs(1).
+		WithShortDescription("install tools").
+		WithLongDescription("install tools that make a productive kubernetes developer").
+		WithRunFunc(install).
+		Build()
+```
+
+<!-- markdownlint-enable MD010 -->
+
+which results in the following usage:
+
+```text
+Usage:
+  mycoolcli install [flags] [options]
+
+Options:
+  kubectl    install kubectl
+  helm       install helm
+  skaffold   install skaffold
+
+Profiles:
+  core             install core tools for working with k8s
+    ↳ Options:     kubectl, helm
+  developer, dev   install k8s developer tools
+    ↳ Options:     kubectl, helm, skaffold
+
+Flags:
+  -h, --help   help for install
+```
+
+It's important to note that Options and Profiles simply end up in the
+cobra.Commands/boa.Commands `args` slice. It is up to the user to determine what
+an option or profile type of argument means for their application.
 
 ## ViperCfgBuilder
 
