@@ -16,7 +16,7 @@ type BoaCmdBuilder struct {
 func ToBoaCmdBuilder(cmd *cobra.Command) *BoaCmdBuilder {
 	return &BoaCmdBuilder{
 		&CobraCmdBuilder{cmd},
-		&Command{cmd, []Option{}},
+		&Command{cmd, []Option{}, []Profile{}},
 	}
 }
 
@@ -39,42 +39,61 @@ func (b *BoaCmdBuilder) WithOptions(opts ...Option) *BoaCmdBuilder {
 	return b
 }
 
-// WithOptionsAndTemplate is used to add any number of options to the boa
-// Command and applies the WithOptionsTemplate() method as well.
-func (b *BoaCmdBuilder) WithOptionsAndTemplate(opts ...Option) *BoaCmdBuilder {
-	return b.WithOptions(opts...).WithOptionsTemplate()
+// WithValidOptions is used to add any number of options to the boa Command and
+// set them as ValidArgs
+func (b *BoaCmdBuilder) WithValidOptions(opts ...Option) *BoaCmdBuilder {
+	b.cmd.Opts = append(b.cmd.Opts, opts...)
+	for _, opt := range b.cmd.Opts {
+		b.cmd.ValidArgs = append(b.cmd.ValidArgs, opt.Args...)
+	}
+	return b
+}
+
+// WithProfiles is used to add any number of options to the boa Command
+func (b *BoaCmdBuilder) WithProfiles(profs ...Profile) *BoaCmdBuilder {
+	b.cmd.Profiles = append(b.cmd.Profiles, profs...)
+	return b
+}
+
+// WithValidProfiles is used to add any number of options to the boa Command and
+// set them as ValidArgs
+func (b *BoaCmdBuilder) WithValidProfiles(profs ...Profile) *BoaCmdBuilder {
+	b.cmd.Profiles = append(b.cmd.Profiles, profs...)
+	for _, prof := range b.cmd.Profiles {
+		b.cmd.ValidArgs = append(b.cmd.ValidArgs, prof.Args...)
+	}
+	return b
 }
 
 // WithUsageTemplate is used to add a custom template for usage text
 func (b *BoaCmdBuilder) WithUsageTemplate(template string) *BoaCmdBuilder {
-	cmd := b.Build()
-	b.WithUsageFunc(cmd.UsageFunc(template))
+	b.WithUsageFunc(b.cmd.UsageFunc(template))
 	return b
 }
 
 // WithHelpTemplate is used to add a custom template for help text
 func (b *BoaCmdBuilder) WithHelpTemplate(template string) *BoaCmdBuilder {
-	cmd := b.Build()
-	b.WithHelpFunc(cmd.HelpFunc(template))
+	b.WithHelpFunc(b.cmd.HelpFunc(template))
 	return b
 }
 
 // WithOptionsTemplate is used to add options to the usage and help text
 func (b *BoaCmdBuilder) WithOptionsTemplate() *BoaCmdBuilder {
-	template := b.Build().OptionsTemplate()
+	template := b.cmd.OptionsTemplate()
 	return b.WithUsageTemplate(template).WithHelpTemplate(template)
 }
 
-// WithValidArgsFromOptions updates the underlying cobra.Command's ValidArgs
-// with all arguments from the boa Commands options
-//
-// Should be used in conjunction with a CobraCmdBuilder
-//
-//	WithArgs(cobra.OnlyValidArgs)
-func (b *BoaCmdBuilder) WithValidArgsFromOptions() *BoaCmdBuilder {
-	for _, opt := range b.cmd.Opts {
-		b.cmd.ValidArgs = append(b.cmd.ValidArgs, opt.Args...)
-	}
+// WithMinValidArgs will cause the command to throw an error if at least minArgs
+// valid arguments are not provided
+func (b *BoaCmdBuilder) WithMinValidArgs(minArgs int) *BoaCmdBuilder {
+	b.cmd.Args = cobra.MatchAll(cobra.MinimumNArgs(minArgs), cobra.OnlyValidArgs)
+	return b
+}
+
+// WithMaxValidArgs will cause the command to throw an error if more than
+// maxArgs valid arguments are provided
+func (b *BoaCmdBuilder) WithMaxValidArgs(maxArgs int) *BoaCmdBuilder {
+	b.cmd.Args = cobra.MatchAll(cobra.MaximumNArgs(maxArgs), cobra.OnlyValidArgs)
 	return b
 }
 
