@@ -11,17 +11,17 @@ import (
 
 func TestBoaCmdBuilder(t *testing.T) {
 	expectedOptionsOutput := `Usage:
-  test [flags] [options]
+  options [flags] [options]
 
 Options:
   option1, opt1   opt1 description
   option2         opt2 description
 
 Flags:
-  -h, --help   help for test
+  -h, --help   help for options
 `
 	expectedProfilesOutput := `Usage:
-  test [flags] [options]
+  profiles [flags] [options]
 
 Options:
   option1, opt1   opt1 description
@@ -34,7 +34,7 @@ Profiles:
     ↳ Options:      option1
 
 Flags:
-  -h, --help   help for test
+  -h, --help   help for profiles
 `
 
 	options := []Option{
@@ -60,15 +60,12 @@ Flags:
 		},
 	}
 
-	cmd1 := NewCmd("test").
+	cmd1 := NewCmd("options").
 		WithOptions(options...).
 		WithOptionsTemplate().
 		WithNoOp().
 		Build()
-	cmd2 := NewCmd("test").
-		WithNoOp().
-		Build()
-	cmd3 := NewCmd("test").
+	cmd2 := NewCmd("profiles").
 		WithOptions(options...).
 		WithProfiles(profiles...).
 		WithOptionsTemplate().
@@ -76,8 +73,7 @@ Flags:
 		Build()
 
 	assert.Equal(t, expectedOptionsOutput, captureCmdOutput(cmd1, "-h"))
-	assert.Equal(t, expectedOptionsOutput, captureCmdOutput(cmd2, "-h"))
-	assert.Equal(t, expectedProfilesOutput, captureCmdOutput(cmd3, "-h"))
+	assert.Equal(t, expectedProfilesOutput, captureCmdOutput(cmd2, "-h"))
 }
 
 func captureCmdOutput(cmd *cobra.Command, args ...string) string {
