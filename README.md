@@ -1,4 +1,5 @@
-# Boa
+<!-- markdownlint-disable MD041 -->
+![Boa](assets/boa-logo-dark.png)
 
 [![Build Status](https://github.com/j2udev/boa/actions/workflows/go.yml/badge.svg)](https://github.com/j2udev/boa/actions/workflows/go.yml)
 [![GoReportCard](https://goreportcard.com/badge/github.com/j2udev/boa)](https://goreportcard.com/report/github.com/j2udev/boa)
@@ -8,11 +9,6 @@ Boa is a wrapper for the popular [Cobra](https://github.com/spf13/cobra) and
 [Viper](https://github.com/spf13/viper) libraries. It streamlines the building
 of Cobra Commands and Viper configuration, making them easier to create, read
 and maintain.
-
-## Disclaimer
-
-This project should be considered unstable until it is officially released. Use
-at your own risk.
 
 ## CobraCmdBuilder
 
